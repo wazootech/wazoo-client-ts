@@ -15,9 +15,9 @@ npx jsr add @wazoo/client
 ## Usage
 
 ```ts
-import { createWazooApiClient, listWorlds } from "@wazoo/client";
+import { createClient, listWorlds } from "@wazoo/client";
 
-const client = createWazooApiClient({
+const client = createClient({
   baseUrl: "https://api.wazoo.dev",
   auth: process.env.WAZOO_PLATFORM_TOKEN,
 });
