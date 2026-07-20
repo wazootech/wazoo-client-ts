@@ -4,19 +4,12 @@ export type ClientOptions = {
     baseUrl: 'https://api.wazoo.dev' | (string & {});
 };
 
-export type ErrorResponse = {
-    error: {
-        code: string;
-        message: string;
-    };
-};
-
 export type User = {
     uid: string;
     email: string;
-    displayName?: string | null;
+    displayName: string | null;
     state: 'ACTIVE';
-    createTime?: string;
+    createTime: string;
 };
 
 export type World = {
@@ -37,6 +30,9 @@ export type World = {
 export type CreateWorldRequest = {
     ownerEmail?: string;
     email?: string;
+    /**
+     * Resource ID matching ^[a-z][a-z0-9-]{2,62}$
+     */
     worldId: string;
     world: {
         displayName: string;
@@ -45,15 +41,32 @@ export type CreateWorldRequest = {
 };
 
 export type UpdateWorldRequest = {
-    /**
-     * Comma-separated list of fields: displayName, region, state.
-     */
     updateMask: string;
     world: {
         displayName?: string;
         region?: string;
         state?: 'ACTIVE' | 'SUSPENDED';
     };
+};
+
+export type SyncReport = {
+    status: 'OK';
+    actions: Array<string>;
+    warnings: Array<string>;
+    errors: Array<string>;
+};
+
+export type WorldToken = {
+    uid: string;
+    name: string;
+    namespace?: string;
+    worldId?: string;
+    scopes?: Array<string>;
+    createTime?: string;
+};
+
+export type WorldTokenCreateRequest = {
+    name?: string;
 };
 
 export type PlatformToken = {
@@ -65,6 +78,12 @@ export type PlatformToken = {
     createTime?: string;
 };
 
+export type PlatformTokenCreateResponse = {
+    uid: string;
+    name: string;
+    token: string;
+};
+
 export type PlatformTokenCreateRequest = {
     user?: string;
     email?: string;
@@ -74,48 +93,16 @@ export type PlatformTokenCreateRequest = {
     expiresAt?: string;
 };
 
-export type PlatformTokenCreateResponse = {
-    uid: string;
-    name: string;
-    token: string;
-};
-
-export type WorldToken = {
-    uid: string;
-    name: string;
-    namespace?: string;
-    worldId: string;
-    scopes?: Array<string>;
-    createTime?: string;
-};
-
-export type WorldTokenCreateRequest = {
-    name?: string;
-};
-
-export type WorldTokenCreateResponse = {
-    token: WorldToken & {
-        token?: string;
-    };
-};
-
-export type SyncReport = {
-    status: 'OK';
-    actions: Array<string>;
-    warnings: Array<string>;
-    errors: Array<string>;
-};
-
 export type UsageEvent = {
-    name?: string;
-    metric?: string;
-    quantity?: number;
-    unit?: string;
+    name: string;
+    metric: string;
+    quantity: number;
+    unit: string;
     providerCostMicrocents?: number | null;
     wazooMarkupMicrocents?: number;
     estimatedCostMicrocents?: number | null;
-    billingSource?: string;
-    createTime?: string;
+    billingSource: string;
+    createTime: string;
 };
 
 export type UsageRecordRequest = {
@@ -132,20 +119,13 @@ export type UsageRecordRequest = {
 };
 
 export type Billing = {
-    world?: string;
-    state?: string;
-    provider?: string;
-    customerConfigured?: boolean;
-    subscriptionConfigured?: boolean;
-    paymentRequired?: boolean;
+    world: string;
+    state: string;
+    provider: string;
+    customerConfigured: boolean;
+    subscriptionConfigured: boolean;
+    paymentRequired: boolean;
 };
-
-/**
- * User email to operate on when using an admin token. User tokens ignore this parameter.
- */
-export type EmailQuery = string;
-
-export type WorldId = string;
 
 export type GetHealthData = {
     body?: never;
@@ -158,22 +138,12 @@ export type GetHealthResponses = {
     /**
      * Service is healthy
      */
-    200: unknown;
+    200: {
+        status: string;
+    };
 };
 
-export type GetOpenApiJsonData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/openapi.json';
-};
-
-export type GetOpenApiJsonResponses = {
-    /**
-     * OpenAPI document
-     */
-    200: unknown;
-};
+export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
 
 export type GetUserMeData = {
     body?: never;
@@ -191,7 +161,12 @@ export type GetUserMeErrors = {
     /**
      * Bad request
      */
-    400: ErrorResponse;
+    400: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
 };
 
 export type GetUserMeError = GetUserMeErrors[keyof GetUserMeErrors];
@@ -201,12 +176,14 @@ export type GetUserMeResponses = {
      * Existing user
      */
     200: {
-        user?: User;
+        user: User;
     };
     /**
      * Created user
      */
-    201: unknown;
+    201: {
+        user: User;
+    };
 };
 
 export type GetUserMeResponse = GetUserMeResponses[keyof GetUserMeResponses];
@@ -228,7 +205,7 @@ export type ListWorldsResponses = {
      * World list
      */
     200: {
-        worlds?: Array<World>;
+        worlds: Array<World>;
     };
 };
 
@@ -245,11 +222,26 @@ export type CreateWorldErrors = {
     /**
      * Bad request
      */
-    400: ErrorResponse;
+    400: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
     /**
-     * Bad request
+     * Quota exceeded
      */
-    429: ErrorResponse;
+    429: {
+        error: {
+            code: string;
+            message: string;
+        };
+        quota: {
+            state: string;
+            reason?: string;
+            usagePercent?: number;
+        };
+    };
 };
 
 export type CreateWorldError = CreateWorldErrors[keyof CreateWorldErrors];
@@ -259,7 +251,7 @@ export type CreateWorldResponses = {
      * Created World
      */
     201: {
-        world?: World;
+        world: World;
     };
 };
 
@@ -281,9 +273,14 @@ export type DeleteWorldData = {
 
 export type DeleteWorldErrors = {
     /**
-     * Resource not found
+     * Not found
      */
-    404: ErrorResponse;
+    404: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
 };
 
 export type DeleteWorldError = DeleteWorldErrors[keyof DeleteWorldErrors];
@@ -292,8 +289,12 @@ export type DeleteWorldResponses = {
     /**
      * Deleted World
      */
-    200: unknown;
+    200: {
+        world: World;
+    };
 };
+
+export type DeleteWorldResponse = DeleteWorldResponses[keyof DeleteWorldResponses];
 
 export type GetWorldData = {
     body?: never;
@@ -311,9 +312,14 @@ export type GetWorldData = {
 
 export type GetWorldErrors = {
     /**
-     * Resource not found
+     * Not found
      */
-    404: ErrorResponse;
+    404: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
 };
 
 export type GetWorldError = GetWorldErrors[keyof GetWorldErrors];
@@ -322,8 +328,12 @@ export type GetWorldResponses = {
     /**
      * World
      */
-    200: unknown;
+    200: {
+        world: World;
+    };
 };
+
+export type GetWorldResponse = GetWorldResponses[keyof GetWorldResponses];
 
 export type UpdateWorldData = {
     body: UpdateWorldRequest;
@@ -343,7 +353,12 @@ export type UpdateWorldErrors = {
     /**
      * Bad request
      */
-    400: ErrorResponse;
+    400: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
 };
 
 export type UpdateWorldError = UpdateWorldErrors[keyof UpdateWorldErrors];
@@ -352,8 +367,12 @@ export type UpdateWorldResponses = {
     /**
      * Updated World
      */
-    200: unknown;
+    200: {
+        world: World;
+    };
 };
+
+export type UpdateWorldResponse = UpdateWorldResponses[keyof UpdateWorldResponses];
 
 export type UndeleteWorldData = {
     body?: never;
@@ -373,7 +392,12 @@ export type UndeleteWorldErrors = {
     /**
      * Bad request
      */
-    400: ErrorResponse;
+    400: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
 };
 
 export type UndeleteWorldError = UndeleteWorldErrors[keyof UndeleteWorldErrors];
@@ -382,8 +406,12 @@ export type UndeleteWorldResponses = {
     /**
      * Restored World
      */
-    200: unknown;
+    200: {
+        world: World;
+    };
 };
+
+export type UndeleteWorldResponse = UndeleteWorldResponses[keyof UndeleteWorldResponses];
 
 export type SyncWorldData = {
     body?: never;
@@ -404,8 +432,8 @@ export type SyncWorldResponses = {
      * Sync report
      */
     200: {
-        world?: World;
-        syncReport?: SyncReport;
+        world: World;
+        syncReport: SyncReport;
     };
 };
 
@@ -429,8 +457,12 @@ export type ListWorldTokensResponses = {
     /**
      * World tokens
      */
-    200: unknown;
+    200: {
+        tokens: Array<WorldToken>;
+    };
 };
+
+export type ListWorldTokensResponse = ListWorldTokensResponses[keyof ListWorldTokensResponses];
 
 export type CreateWorldTokenData = {
     body?: WorldTokenCreateRequest;
@@ -450,8 +482,12 @@ export type CreateWorldTokenResponses = {
     /**
      * Created World token
      */
-    201: unknown;
+    201: {
+        token: WorldToken;
+    };
 };
+
+export type CreateWorldTokenResponse = CreateWorldTokenResponses[keyof CreateWorldTokenResponses];
 
 export type DeleteWorldTokenData = {
     body?: never;
@@ -488,8 +524,12 @@ export type ListPlatformTokensResponses = {
     /**
      * Platform tokens
      */
-    200: unknown;
+    200: {
+        tokens: Array<PlatformToken>;
+    };
 };
+
+export type ListPlatformTokensResponse = ListPlatformTokensResponses[keyof ListPlatformTokensResponses];
 
 export type CreatePlatformTokenData = {
     body: PlatformTokenCreateRequest;
@@ -498,12 +538,28 @@ export type CreatePlatformTokenData = {
     url: '/v1/auth/api-tokens';
 };
 
+export type CreatePlatformTokenErrors = {
+    /**
+     * Permission denied
+     */
+    403: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type CreatePlatformTokenError = CreatePlatformTokenErrors[keyof CreatePlatformTokenErrors];
+
 export type CreatePlatformTokenResponses = {
     /**
      * Created platform token
      */
-    201: unknown;
+    201: PlatformTokenCreateResponse;
 };
+
+export type CreatePlatformTokenResponse = CreatePlatformTokenResponses[keyof CreatePlatformTokenResponses];
 
 export type DeletePlatformTokenData = {
     body?: never;
@@ -518,8 +574,12 @@ export type DeletePlatformTokenResponses = {
     /**
      * Deleted platform token
      */
-    200: unknown;
+    200: {
+        token: string;
+    };
 };
+
+export type DeletePlatformTokenResponse = DeletePlatformTokenResponses[keyof DeletePlatformTokenResponses];
 
 export type CreateNamedPlatformTokenData = {
     body?: PlatformTokenCreateRequest;
@@ -534,8 +594,10 @@ export type CreateNamedPlatformTokenResponses = {
     /**
      * Created platform token
      */
-    201: unknown;
+    201: PlatformTokenCreateResponse;
 };
+
+export type CreateNamedPlatformTokenResponse = CreateNamedPlatformTokenResponses[keyof CreateNamedPlatformTokenResponses];
 
 export type ValidatePlatformTokenData = {
     body?: never;
@@ -548,8 +610,12 @@ export type ValidatePlatformTokenResponses = {
     /**
      * Token validity
      */
-    200: unknown;
+    200: {
+        exp: number;
+    };
 };
+
+export type ValidatePlatformTokenResponse = ValidatePlatformTokenResponses[keyof ValidatePlatformTokenResponses];
 
 export type GetWorldUsageData = {
     body?: never;
@@ -557,9 +623,6 @@ export type GetWorldUsageData = {
         worldId: string;
     };
     query?: {
-        /**
-         * User email to operate on when using an admin token. User tokens ignore this parameter.
-         */
         email?: string;
         from?: string;
         to?: string;
@@ -571,8 +634,19 @@ export type GetWorldUsageResponses = {
     /**
      * Usage summary
      */
-    200: unknown;
+    200: {
+        usage: {
+            world: string;
+            total: Array<{
+                metric: string;
+                quantity: number;
+            }>;
+            events: Array<UsageEvent>;
+        };
+    };
 };
+
+export type GetWorldUsageResponse = GetWorldUsageResponses[keyof GetWorldUsageResponses];
 
 export type RecordWorldUsageData = {
     body: UsageRecordRequest;
@@ -583,12 +657,34 @@ export type RecordWorldUsageData = {
     url: '/v1/worlds/{worldId}/usage';
 };
 
+export type RecordWorldUsageErrors = {
+    /**
+     * Limit exceeded
+     */
+    429: {
+        error: {
+            code: string;
+            message: string;
+        };
+        quota: {
+            state: string;
+            reason?: string;
+        };
+    };
+};
+
+export type RecordWorldUsageError = RecordWorldUsageErrors[keyof RecordWorldUsageErrors];
+
 export type RecordWorldUsageResponses = {
     /**
      * Usage accepted
      */
-    201: unknown;
+    201: {
+        accepted: boolean;
+    };
 };
+
+export type RecordWorldUsageResponse = RecordWorldUsageResponses[keyof RecordWorldUsageResponses];
 
 export type GetWorldLimitsData = {
     body?: never;
@@ -596,9 +692,6 @@ export type GetWorldLimitsData = {
         worldId: string;
     };
     query?: {
-        /**
-         * User email to operate on when using an admin token. User tokens ignore this parameter.
-         */
         email?: string;
     };
     url: '/v1/worlds/{worldId}/limits';
@@ -608,8 +701,15 @@ export type GetWorldLimitsResponses = {
     /**
      * World limits
      */
-    200: unknown;
+    200: {
+        limits: Array<{
+            metric: string;
+            limitQuantity: number;
+        }>;
+    };
 };
+
+export type GetWorldLimitsResponse = GetWorldLimitsResponses[keyof GetWorldLimitsResponses];
 
 export type GetWorldBillingData = {
     body?: never;
@@ -617,9 +717,6 @@ export type GetWorldBillingData = {
         worldId: string;
     };
     query?: {
-        /**
-         * User email to operate on when using an admin token. User tokens ignore this parameter.
-         */
         email?: string;
     };
     url: '/v1/worlds/{worldId}/billing';
@@ -629,8 +726,12 @@ export type GetWorldBillingResponses = {
     /**
      * World billing state
      */
-    200: unknown;
+    200: {
+        billing: Billing;
+    };
 };
+
+export type GetWorldBillingResponse = GetWorldBillingResponses[keyof GetWorldBillingResponses];
 
 export type ListWorldInvoicesData = {
     body?: never;
@@ -638,9 +739,6 @@ export type ListWorldInvoicesData = {
         worldId: string;
     };
     query?: {
-        /**
-         * User email to operate on when using an admin token. User tokens ignore this parameter.
-         */
         email?: string;
     };
     url: '/v1/worlds/{worldId}/billing/invoices';
@@ -650,8 +748,12 @@ export type ListWorldInvoicesResponses = {
     /**
      * World invoices
      */
-    200: unknown;
+    200: {
+        invoices: Array<unknown>;
+    };
 };
+
+export type ListWorldInvoicesResponse = ListWorldInvoicesResponses[keyof ListWorldInvoicesResponses];
 
 export type OpenWorldBillingPortalData = {
     body?: never;
@@ -659,9 +761,6 @@ export type OpenWorldBillingPortalData = {
         worldId: string;
     };
     query?: {
-        /**
-         * User email to operate on when using an admin token. User tokens ignore this parameter.
-         */
         email?: string;
     };
     url: '/v1/worlds/{worldId}/billing/openPortal';
@@ -669,23 +768,14 @@ export type OpenWorldBillingPortalData = {
 
 export type OpenWorldBillingPortalErrors = {
     /**
-     * Bad request
+     * Not available
      */
-    400: ErrorResponse;
+    400: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
 };
 
 export type OpenWorldBillingPortalError = OpenWorldBillingPortalErrors[keyof OpenWorldBillingPortalErrors];
-
-export type ReceiveStripeWebhookData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/stripe/webhook';
-};
-
-export type ReceiveStripeWebhookResponses = {
-    /**
-     * Webhook received
-     */
-    200: unknown;
-};

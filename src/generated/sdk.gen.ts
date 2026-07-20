@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, GetHealthData, GetHealthResponses, GetOpenApiJsonData, GetOpenApiJsonResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, ReceiveStripeWebhookData, ReceiveStripeWebhookResponses, RecordWorldUsageData, RecordWorldUsageResponses, SyncWorldData, SyncWorldResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen';
+import type { CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, GetHealthData, GetHealthResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, SyncWorldData, SyncWorldResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -19,8 +19,6 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 export const getHealth = <ThrowOnError extends boolean = false>(options?: Options<GetHealthData, ThrowOnError>): RequestResult<GetHealthResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetHealthResponses, unknown, ThrowOnError>({ url: '/health', ...options });
-
-export const getOpenApiJson = <ThrowOnError extends boolean = false>(options?: Options<GetOpenApiJsonData, ThrowOnError>): RequestResult<GetOpenApiJsonResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetOpenApiJsonResponses, unknown, ThrowOnError>({ url: '/openapi.json', ...options });
 
 export const getUserMe = <ThrowOnError extends boolean = false>(options?: Options<GetUserMeData, ThrowOnError>): RequestResult<GetUserMeResponses, GetUserMeErrors, ThrowOnError> => (options?.client ?? client).get<GetUserMeResponses, GetUserMeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -106,7 +104,7 @@ export const listPlatformTokens = <ThrowOnError extends boolean = false>(options
     ...options
 });
 
-export const createPlatformToken = <ThrowOnError extends boolean = false>(options: Options<CreatePlatformTokenData, ThrowOnError>): RequestResult<CreatePlatformTokenResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreatePlatformTokenResponses, unknown, ThrowOnError>({
+export const createPlatformToken = <ThrowOnError extends boolean = false>(options: Options<CreatePlatformTokenData, ThrowOnError>): RequestResult<CreatePlatformTokenResponses, CreatePlatformTokenErrors, ThrowOnError> => (options.client ?? client).post<CreatePlatformTokenResponses, CreatePlatformTokenErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/auth/api-tokens',
     ...options,
@@ -144,7 +142,7 @@ export const getWorldUsage = <ThrowOnError extends boolean = false>(options: Opt
     ...options
 });
 
-export const recordWorldUsage = <ThrowOnError extends boolean = false>(options: Options<RecordWorldUsageData, ThrowOnError>): RequestResult<RecordWorldUsageResponses, unknown, ThrowOnError> => (options.client ?? client).post<RecordWorldUsageResponses, unknown, ThrowOnError>({
+export const recordWorldUsage = <ThrowOnError extends boolean = false>(options: Options<RecordWorldUsageData, ThrowOnError>): RequestResult<RecordWorldUsageResponses, RecordWorldUsageErrors, ThrowOnError> => (options.client ?? client).post<RecordWorldUsageResponses, RecordWorldUsageErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/usage',
     ...options,
@@ -177,5 +175,3 @@ export const openWorldBillingPortal = <ThrowOnError extends boolean = false>(opt
     url: '/v1/worlds/{worldId}/billing/openPortal',
     ...options
 });
-
-export const receiveStripeWebhook = <ThrowOnError extends boolean = false>(options?: Options<ReceiveStripeWebhookData, ThrowOnError>): RequestResult<ReceiveStripeWebhookResponses, unknown, ThrowOnError> => (options?.client ?? client).post<ReceiveStripeWebhookResponses, unknown, ThrowOnError>({ url: '/v1/stripe/webhook', ...options });
