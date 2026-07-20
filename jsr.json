@@ -1,0 +1,16 @@
+{
+  "name": "@wazoo/api",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./openapi.json": "./openapi/openapi.json"
+  },
+  "publish": {
+    "include": [
+      "src/**/*.ts",
+      "openapi/openapi.json",
+      "README.md",
+      "LICENSE"
+    ]
+  }
+}
