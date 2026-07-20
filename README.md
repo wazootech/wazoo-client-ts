@@ -1,4 +1,4 @@
-# @wazoo/api
+# @wazoo/client
 
 TypeScript client for the Wazoo Platform API at `api.wazoo.dev`.
 
@@ -9,13 +9,13 @@ For data-plane graph operations against `worlds-api.wazoo.dev`, use the Worlds S
 ## Install
 
 ```sh
-npx jsr add @wazoo/api
+npx jsr add @wazoo/client
 ```
 
 ## Usage
 
 ```ts
-import { createWazooApiClient, listWorlds } from "@wazoo/api";
+import { createWazooApiClient, listWorlds } from "@wazoo/client";
 
 const client = createWazooApiClient({
   baseUrl: "https://api.wazoo.dev",
@@ -34,9 +34,7 @@ console.log(response.data?.worlds);
 
 ```sh
 npm install
-npm run sync:openapi
-npm run generate
-npm run build
+npm run check
 ```
 
-By default, `sync:openapi` reads `../wazoo-api/src/openapi/spec.ts` for local development. Set `WAZOO_API_OPENAPI_URL=https://api.wazoo.dev/openapi.json` to sync from a deployed API.
+Run `npm run sync:openapi` to refresh `openapi/openapi.json`. By default, it reads `../wazoo-api/src/openapi/spec.ts` for local development. Set `WAZOO_API_OPENAPI_URL=https://api.wazoo.dev/openapi.json` to sync from a deployed API.
