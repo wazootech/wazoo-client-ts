@@ -1,4 +1,7 @@
-export * from "./generated/index";
-export { client } from "./generated/client.gen";
-export { createClient } from "./generated/client/index";
-export type { Client, Options, RequestResult } from "./generated/client/index";
+export * from "./generated/index.js";
+export { client } from "./generated/client.gen.js";
+export { createClient } from "./generated/client/index.js";
+export type { Client, Options, RequestResult } from "./generated/client/index.js";
+
+
+

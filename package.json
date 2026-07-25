@@ -4,12 +4,18 @@
   "description": "TypeScript client for the Wazoo Platform API generated from OpenAPI.",
   "type": "module",
   "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
     "./openapi.json": "./openapi/openapi.json"
   },
   "files": [
     "src",
+    "dist",
     "openapi/openapi.json",
     "README.md",
     "LICENSE"
