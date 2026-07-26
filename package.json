@@ -25,6 +25,7 @@
     "generate": "openapi-ts",
     "build": "tsc -p tsconfig.json",
     "check": "npm run generate && npm run build",
+    "prepare": "npm run check",
     "prepublishOnly": "npm run check"
   },
   "keywords": [
