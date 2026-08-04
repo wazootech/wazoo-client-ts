@@ -2,9 +2,12 @@
 
 TypeScript client for the Wazoo Platform API at `api.wazoo.dev`.
 
-This package is generated from the canonical Wazoo Platform OpenAPI document. Use it for management-plane operations: users, Worlds, platform tokens, World data-plane tokens, usage, limits, and beta billing.
+This package is generated from the canonical Wazoo Platform OpenAPI document.
+Use it for management-plane operations: users, Worlds, platform tokens, World
+data-plane tokens, usage, limits, and beta billing.
 
-For data-plane graph operations against `worlds-api.wazoo.dev`, use the Worlds SDK/custom data-plane client instead.
+For data-plane graph operations against `worlds-api.wazoo.dev`, use the Worlds
+SDK/custom data-plane client instead.
 
 ## Install
 
@@ -32,9 +35,16 @@ console.log(response.data?.worlds);
 
 ## Development
 
+Requires Deno (version pinned in `.tool-versions`).
+
 ```sh
-npm install
-npm run check
+deno task ci
 ```
 
-Run `npm run sync:openapi` to refresh `openapi/openapi.json`. By default, it reads `../wazoo-api/src/openapi/spec.ts` for local development. Set `WAZOO_API_OPENAPI_URL=https://api.wazoo.dev/openapi.json` to sync from a deployed API.
+Run `deno task sync:openapi` to refresh `openapi/openapi.json`. By default, it
+reads `../wazoo-api/src/openapi/spec.ts` for local development. Set
+`WAZOO_API_OPENAPI_URL=https://api.wazoo.dev/openapi.json` to sync from a
+deployed API.
+
+Run `deno task generate` to regenerate `src/generated/` from the synced spec via
+`@hey-api/openapi-ts`.
