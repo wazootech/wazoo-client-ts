@@ -1,12 +1,13 @@
+// Syncs openapi/openapi.json from a TypeScript OpenAPI spec module or a remote
+// URL. Deno imports the .ts spec natively, so no tsx loader is required.
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputPath = resolve(repoRoot, "openapi/openapi.json");
-const source =
-  process.env.WAZOO_API_OPENAPI_SOURCE ??
-  process.env.WAZOO_API_OPENAPI_URL ??
+const source = Deno.env.get("WAZOO_API_OPENAPI_SOURCE") ??
+  Deno.env.get("WAZOO_API_OPENAPI_URL") ??
   "../wazoo-api/src/openapi/spec.ts";
 
 const spec = await loadSpec(source);
@@ -14,7 +15,7 @@ const next = `${JSON.stringify(spec, null, 2)}\n`;
 
 await mkdir(dirname(outputPath), { recursive: true });
 
-let previous = null;
+let previous: string | null = null;
 try {
   previous = await readFile(outputPath, "utf8");
 } catch {
@@ -28,7 +29,7 @@ if (previous === next) {
   console.log("openapi/openapi.json updated");
 }
 
-async function loadSpec(value) {
+async function loadSpec(value: string): Promise<unknown> {
   if (/^https?:\/\//.test(value)) {
     const response = await fetch(value);
     if (!response.ok) {
