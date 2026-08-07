@@ -49,13 +49,6 @@ export type UpdateWorldRequest = {
     };
 };
 
-export type SyncReport = {
-    status: 'OK';
-    actions: Array<string>;
-    warnings: Array<string>;
-    errors: Array<string>;
-};
-
 export type WorldToken = {
     uid: string;
     name: string;
@@ -412,32 +405,6 @@ export type UndeleteWorldResponses = {
 };
 
 export type UndeleteWorldResponse = UndeleteWorldResponses[keyof UndeleteWorldResponses];
-
-export type SyncWorldData = {
-    body?: never;
-    path: {
-        worldId: string;
-    };
-    query?: {
-        /**
-         * User email to operate on when using an admin token. User tokens ignore this parameter.
-         */
-        email?: string;
-    };
-    url: '/v1/worlds/{worldId}/sync';
-};
-
-export type SyncWorldResponses = {
-    /**
-     * Sync report
-     */
-    200: {
-        world: World;
-        syncReport: SyncReport;
-    };
-};
-
-export type SyncWorldResponse = SyncWorldResponses[keyof SyncWorldResponses];
 
 export type ListWorldTokensData = {
     body?: never;
