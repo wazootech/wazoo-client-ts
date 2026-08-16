@@ -16,6 +16,7 @@ export type World = {
     name: string;
     uid: string;
     worldId: string;
+    worldUid?: string;
     displayName: string;
     region: string;
     state: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
@@ -138,23 +139,59 @@ export type GetHealthResponses = {
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
 
+export type DeleteUserMeData = {
+    body: {
+        confirmationToken: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/users/me';
+};
+
+export type DeleteUserMeErrors = {
+    /**
+     * Invalid or expired confirmation token
+     */
+    400: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Not authenticated as a user
+     */
+    401: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type DeleteUserMeError = DeleteUserMeErrors[keyof DeleteUserMeErrors];
+
+export type DeleteUserMeResponses = {
+    /**
+     * Account deleted
+     */
+    204: void;
+};
+
+export type DeleteUserMeResponse = DeleteUserMeResponses[keyof DeleteUserMeResponses];
+
 export type GetUserMeData = {
     body?: never;
     path?: never;
-    query?: {
-        /**
-         * User email to operate on when using an admin token. User tokens ignore this parameter.
-         */
-        email?: string;
-    };
+    query?: never;
     url: '/v1/users/me';
 };
 
 export type GetUserMeErrors = {
     /**
-     * Bad request
+     * User not found
      */
-    400: {
+    404: {
         error: {
             code: string;
             message: string;
@@ -166,20 +203,103 @@ export type GetUserMeError = GetUserMeErrors[keyof GetUserMeErrors];
 
 export type GetUserMeResponses = {
     /**
-     * Existing user
+     * Authenticated user
      */
     200: {
-        user: User;
-    };
-    /**
-     * Created user
-     */
-    201: {
         user: User;
     };
 };
 
 export type GetUserMeResponse = GetUserMeResponses[keyof GetUserMeResponses];
+
+export type InitiateAccountDeletionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/users/me/deletion';
+};
+
+export type InitiateAccountDeletionErrors = {
+    /**
+     * Not authenticated as a user
+     */
+    401: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type InitiateAccountDeletionError = InitiateAccountDeletionErrors[keyof InitiateAccountDeletionErrors];
+
+export type InitiateAccountDeletionResponses = {
+    /**
+     * Deletion initiated
+     */
+    201: {
+        deletion: {
+            uid: string;
+            expiresAt: string;
+        };
+        confirmationToken: string;
+        message: string;
+    };
+};
+
+export type InitiateAccountDeletionResponse = InitiateAccountDeletionResponses[keyof InitiateAccountDeletionResponses];
+
+export type ExportUserMeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/users/me/export';
+};
+
+export type ExportUserMeErrors = {
+    /**
+     * Not authenticated as a user
+     */
+    401: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type ExportUserMeError = ExportUserMeErrors[keyof ExportUserMeErrors];
+
+export type ExportUserMeResponses = {
+    /**
+     * User data export
+     */
+    200: {
+        user: User;
+        worlds: Array<{
+            uid: string;
+            worldId: string;
+            displayName: string;
+            state: string;
+            createTime?: string;
+            deleteTime?: string | null;
+        }>;
+        apiTokens: Array<{
+            uid: string;
+            name: string;
+            scope: string;
+            createTime?: string;
+        }>;
+        usageEvents: Array<{
+            metric: string;
+            quantity: number;
+            unit: string;
+            createTime: string;
+        }>;
+    };
+};
+
+export type ExportUserMeResponse = ExportUserMeResponses[keyof ExportUserMeResponses];
 
 export type ListWorldsData = {
     body?: never;
@@ -721,6 +841,49 @@ export type ListWorldInvoicesResponses = {
 };
 
 export type ListWorldInvoicesResponse = ListWorldInvoicesResponses[keyof ListWorldInvoicesResponses];
+
+export type CancelWorldSubscriptionData = {
+    body?: never;
+    path: {
+        worldId: string;
+    };
+    query?: {
+        email?: string;
+    };
+    url: '/v1/worlds/{worldId}/billing/cancel';
+};
+
+export type CancelWorldSubscriptionErrors = {
+    /**
+     * No subscription to cancel
+     */
+    400: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type CancelWorldSubscriptionError = CancelWorldSubscriptionErrors[keyof CancelWorldSubscriptionErrors];
+
+export type CancelWorldSubscriptionResponses = {
+    /**
+     * Cancelled subscription
+     */
+    200: {
+        billing: {
+            world: string;
+            state: string;
+            provider: string;
+            customerConfigured: boolean;
+            subscriptionConfigured: boolean;
+            paymentRequired: boolean;
+        };
+    };
+};
+
+export type CancelWorldSubscriptionResponse = CancelWorldSubscriptionResponses[keyof CancelWorldSubscriptionResponses];
 
 export type OpenWorldBillingPortalData = {
     body?: never;

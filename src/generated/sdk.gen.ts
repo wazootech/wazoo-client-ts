@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.ts';
-import type { CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, GetHealthData, GetHealthResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen.ts';
+import type { CancelWorldSubscriptionData, CancelWorldSubscriptionErrors, CancelWorldSubscriptionResponses, CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteUserMeData, DeleteUserMeErrors, DeleteUserMeResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, ExportUserMeData, ExportUserMeErrors, ExportUserMeResponses, GetHealthData, GetHealthResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, InitiateAccountDeletionData, InitiateAccountDeletionErrors, InitiateAccountDeletionResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -18,20 +18,63 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
     meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
 
+/**
+ * Get health
+ */
 export const getHealth = <ThrowOnError extends boolean = false>(options?: Options<GetHealthData, ThrowOnError>): RequestResult<GetHealthResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetHealthResponses, unknown, ThrowOnError>({ url: '/health', ...options });
 
+/**
+ * Delete the authenticated user's account (two-step confirmation)
+ */
+export const deleteUserMe = <ThrowOnError extends boolean = false>(options: Options<DeleteUserMeData, ThrowOnError>): RequestResult<DeleteUserMeResponses, DeleteUserMeErrors, ThrowOnError> => (options.client ?? client).delete<DeleteUserMeResponses, DeleteUserMeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get authenticated user
+ */
 export const getUserMe = <ThrowOnError extends boolean = false>(options?: Options<GetUserMeData, ThrowOnError>): RequestResult<GetUserMeResponses, GetUserMeErrors, ThrowOnError> => (options?.client ?? client).get<GetUserMeResponses, GetUserMeErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/users/me',
     ...options
 });
 
+/**
+ * Initiate account deletion (returns a short-lived confirmation token)
+ */
+export const initiateAccountDeletion = <ThrowOnError extends boolean = false>(options?: Options<InitiateAccountDeletionData, ThrowOnError>): RequestResult<InitiateAccountDeletionResponses, InitiateAccountDeletionErrors, ThrowOnError> => (options?.client ?? client).post<InitiateAccountDeletionResponses, InitiateAccountDeletionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me/deletion',
+    ...options
+});
+
+/**
+ * Export the data Wazoo holds on the authenticated user
+ */
+export const exportUserMe = <ThrowOnError extends boolean = false>(options?: Options<ExportUserMeData, ThrowOnError>): RequestResult<ExportUserMeResponses, ExportUserMeErrors, ThrowOnError> => (options?.client ?? client).get<ExportUserMeResponses, ExportUserMeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me/export',
+    ...options
+});
+
+/**
+ * List worlds
+ */
 export const listWorlds = <ThrowOnError extends boolean = false>(options?: Options<ListWorldsData, ThrowOnError>): RequestResult<ListWorldsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListWorldsResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds',
     ...options
 });
 
+/**
+ * Create world
+ */
 export const createWorld = <ThrowOnError extends boolean = false>(options: Options<CreateWorldData, ThrowOnError>): RequestResult<CreateWorldResponses, CreateWorldErrors, ThrowOnError> => (options.client ?? client).post<CreateWorldResponses, CreateWorldErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds',
@@ -42,18 +85,27 @@ export const createWorld = <ThrowOnError extends boolean = false>(options: Optio
     }
 });
 
+/**
+ * Delete world
+ */
 export const deleteWorld = <ThrowOnError extends boolean = false>(options: Options<DeleteWorldData, ThrowOnError>): RequestResult<DeleteWorldResponses, DeleteWorldErrors, ThrowOnError> => (options.client ?? client).delete<DeleteWorldResponses, DeleteWorldErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}',
     ...options
 });
 
+/**
+ * Get world
+ */
 export const getWorld = <ThrowOnError extends boolean = false>(options: Options<GetWorldData, ThrowOnError>): RequestResult<GetWorldResponses, GetWorldErrors, ThrowOnError> => (options.client ?? client).get<GetWorldResponses, GetWorldErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}',
     ...options
 });
 
+/**
+ * Update world
+ */
 export const updateWorld = <ThrowOnError extends boolean = false>(options: Options<UpdateWorldData, ThrowOnError>): RequestResult<UpdateWorldResponses, UpdateWorldErrors, ThrowOnError> => (options.client ?? client).patch<UpdateWorldResponses, UpdateWorldErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}',
@@ -64,18 +116,27 @@ export const updateWorld = <ThrowOnError extends boolean = false>(options: Optio
     }
 });
 
+/**
+ * Undelete world
+ */
 export const undeleteWorld = <ThrowOnError extends boolean = false>(options: Options<UndeleteWorldData, ThrowOnError>): RequestResult<UndeleteWorldResponses, UndeleteWorldErrors, ThrowOnError> => (options.client ?? client).post<UndeleteWorldResponses, UndeleteWorldErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/undelete',
     ...options
 });
 
+/**
+ * List world tokens
+ */
 export const listWorldTokens = <ThrowOnError extends boolean = false>(options: Options<ListWorldTokensData, ThrowOnError>): RequestResult<ListWorldTokensResponses, unknown, ThrowOnError> => (options.client ?? client).get<ListWorldTokensResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/auth/tokens',
     ...options
 });
 
+/**
+ * Create world token
+ */
 export const createWorldToken = <ThrowOnError extends boolean = false>(options: Options<CreateWorldTokenData, ThrowOnError>): RequestResult<CreateWorldTokenResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateWorldTokenResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/auth/tokens',
@@ -86,18 +147,27 @@ export const createWorldToken = <ThrowOnError extends boolean = false>(options: 
     }
 });
 
+/**
+ * Revoke world token
+ */
 export const deleteWorldToken = <ThrowOnError extends boolean = false>(options: Options<DeleteWorldTokenData, ThrowOnError>): RequestResult<DeleteWorldTokenResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeleteWorldTokenResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/auth/tokens/{tokenUid}',
     ...options
 });
 
+/**
+ * List platform tokens
+ */
 export const listPlatformTokens = <ThrowOnError extends boolean = false>(options?: Options<ListPlatformTokensData, ThrowOnError>): RequestResult<ListPlatformTokensResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPlatformTokensResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/auth/api-tokens',
     ...options
 });
 
+/**
+ * Create platform token
+ */
 export const createPlatformToken = <ThrowOnError extends boolean = false>(options: Options<CreatePlatformTokenData, ThrowOnError>): RequestResult<CreatePlatformTokenResponses, CreatePlatformTokenErrors, ThrowOnError> => (options.client ?? client).post<CreatePlatformTokenResponses, CreatePlatformTokenErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/auth/api-tokens',
@@ -108,12 +178,18 @@ export const createPlatformToken = <ThrowOnError extends boolean = false>(option
     }
 });
 
+/**
+ * Revoke platform token
+ */
 export const deletePlatformToken = <ThrowOnError extends boolean = false>(options: Options<DeletePlatformTokenData, ThrowOnError>): RequestResult<DeletePlatformTokenResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeletePlatformTokenResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/auth/api-tokens/{tokenName}',
     ...options
 });
 
+/**
+ * Create named platform token
+ */
 export const createNamedPlatformToken = <ThrowOnError extends boolean = false>(options: Options<CreateNamedPlatformTokenData, ThrowOnError>): RequestResult<CreateNamedPlatformTokenResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateNamedPlatformTokenResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/auth/api-tokens/{tokenName}',
@@ -124,18 +200,27 @@ export const createNamedPlatformToken = <ThrowOnError extends boolean = false>(o
     }
 });
 
+/**
+ * Validate platform token
+ */
 export const validatePlatformToken = <ThrowOnError extends boolean = false>(options?: Options<ValidatePlatformTokenData, ThrowOnError>): RequestResult<ValidatePlatformTokenResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ValidatePlatformTokenResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/auth/api-tokens/validate',
     ...options
 });
 
+/**
+ * Get world usage
+ */
 export const getWorldUsage = <ThrowOnError extends boolean = false>(options: Options<GetWorldUsageData, ThrowOnError>): RequestResult<GetWorldUsageResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetWorldUsageResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/usage',
     ...options
 });
 
+/**
+ * Record world usage
+ */
 export const recordWorldUsage = <ThrowOnError extends boolean = false>(options: Options<RecordWorldUsageData, ThrowOnError>): RequestResult<RecordWorldUsageResponses, RecordWorldUsageErrors, ThrowOnError> => (options.client ?? client).post<RecordWorldUsageResponses, RecordWorldUsageErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/usage',
@@ -146,24 +231,45 @@ export const recordWorldUsage = <ThrowOnError extends boolean = false>(options: 
     }
 });
 
+/**
+ * Get world limits
+ */
 export const getWorldLimits = <ThrowOnError extends boolean = false>(options: Options<GetWorldLimitsData, ThrowOnError>): RequestResult<GetWorldLimitsResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetWorldLimitsResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/limits',
     ...options
 });
 
+/**
+ * Get world billing
+ */
 export const getWorldBilling = <ThrowOnError extends boolean = false>(options: Options<GetWorldBillingData, ThrowOnError>): RequestResult<GetWorldBillingResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetWorldBillingResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/billing',
     ...options
 });
 
+/**
+ * List world invoices
+ */
 export const listWorldInvoices = <ThrowOnError extends boolean = false>(options: Options<ListWorldInvoicesData, ThrowOnError>): RequestResult<ListWorldInvoicesResponses, unknown, ThrowOnError> => (options.client ?? client).get<ListWorldInvoicesResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/billing/invoices',
     ...options
 });
 
+/**
+ * Cancel world subscription
+ */
+export const cancelWorldSubscription = <ThrowOnError extends boolean = false>(options: Options<CancelWorldSubscriptionData, ThrowOnError>): RequestResult<CancelWorldSubscriptionResponses, CancelWorldSubscriptionErrors, ThrowOnError> => (options.client ?? client).post<CancelWorldSubscriptionResponses, CancelWorldSubscriptionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/worlds/{worldId}/billing/cancel',
+    ...options
+});
+
+/**
+ * Open billing portal
+ */
 export const openWorldBillingPortal = <ThrowOnError extends boolean = false>(options: Options<OpenWorldBillingPortalData, ThrowOnError>): RequestResult<unknown, OpenWorldBillingPortalErrors, ThrowOnError> => (options.client ?? client).post<unknown, OpenWorldBillingPortalErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/billing/openPortal',
