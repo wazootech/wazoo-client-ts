@@ -1,4 +1,15 @@
-# @wazoo/client
+<p align="center">
+  <a href="https://docs.wazoo.dev">
+    <img src="https://wazoo.dev/assets/wazoo.svg" alt="Wazoo Worlds" width="120" />
+  </a>
+  <br /><br />
+  <em>TypeScript client for the Wazoo Platform API.</em>
+  <br /><br />
+  <a href="https://jsr.io/@wazoo/client"><img src="https://jsr.io/badges/@wazoo/client" alt="JSR" /></a>
+  <a href="https://jsr.io/@wazoo/client/score"><img src="https://jsr.io/badges/@wazoo/client/score" alt="JSR Score" /></a>
+  <a href="https://github.com/wazootech/wazoo-client-ts"><img src="https://img.shields.io/badge/GitHub-black?logo=github" alt="GitHub" /></a>
+  <a href="https://deepwiki.com/wazootech/wazoo-client-ts"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
+</p>
 
 TypeScript client for the Wazoo Platform API at `api.wazoo.dev`.
 
