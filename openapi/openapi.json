@@ -2,20 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Wazoo Platform API",
-    "version": "0.1.0",
-    "description": "Management-plane API for Wazoo users, Worlds, platform tokens, usage, limits, and beta billing."
+    "version": "1.0.0"
   },
-  "servers": [
-    {
-      "url": "https://api.wazoo.dev",
-      "description": "Wazoo Platform API"
-    }
-  ],
-  "security": [
-    {
-      "bearerPlatformToken": []
-    }
-  ],
   "components": {
     "securitySchemes": {
       "bearerPlatformToken": {
@@ -349,6 +337,56 @@
           "unit",
           "billingSource",
           "createTime"
+        ]
+      },
+      "QuotaSummary": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "OK",
+              "WARN",
+              "THROTTLED"
+            ]
+          },
+          "usagePercent": {
+            "type": "number"
+          },
+          "limits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LimitSummary"
+            }
+          }
+        },
+        "required": [
+          "state",
+          "usagePercent",
+          "limits"
+        ]
+      },
+      "LimitSummary": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "limitQuantity": {
+            "type": "number"
+          },
+          "usagePercent": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "metric",
+          "quantity",
+          "limitQuantity",
+          "usagePercent"
         ]
       },
       "UsageRecordRequest": {
@@ -1946,10 +1984,14 @@
                         "total",
                         "events"
                       ]
+                    },
+                    "quota": {
+                      "$ref": "#/components/schemas/QuotaSummary"
                     }
                   },
                   "required": [
-                    "usage"
+                    "usage",
+                    "quota"
                   ]
                 }
               }
@@ -2177,10 +2219,14 @@
                   "properties": {
                     "billing": {
                       "$ref": "#/components/schemas/Billing"
+                    },
+                    "quota": {
+                      "$ref": "#/components/schemas/QuotaSummary"
                     }
                   },
                   "required": [
-                    "billing"
+                    "billing",
+                    "quota"
                   ]
                 }
               }
