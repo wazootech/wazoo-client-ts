@@ -17,7 +17,7 @@ This package is generated from the canonical Wazoo Platform OpenAPI document.
 Use it for management-plane operations: users, Worlds, platform tokens, World
 data-plane tokens, usage, limits, and beta billing.
 
-For data-plane graph operations against `worlds-api.wazoo.dev`, use the Worlds
+For data-plane graph operations against `data.wazoo.dev`, use the Worlds
 SDK/custom data-plane client instead.
 
 ## Install
