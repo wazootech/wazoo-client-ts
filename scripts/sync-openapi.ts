@@ -6,9 +6,12 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputPath = resolve(repoRoot, "openapi/openapi.json");
+// The spec of record is committed in wazoo-api as openapi/openapi.json; the
+// TypeScript spec module is not part of that repository, so a stale default
+// here silently regenerates the client from the wrong source.
 const source = Deno.env.get("WAZOO_API_OPENAPI_SOURCE") ??
   Deno.env.get("WAZOO_API_OPENAPI_URL") ??
-  "../wazoo-api/src/openapi/spec.ts";
+  "../wazoo-api/openapi/openapi.json";
 
 const spec = await loadSpec(source);
 const next = `${JSON.stringify(spec, null, 2)}\n`;
@@ -39,6 +42,9 @@ async function loadSpec(value: string): Promise<unknown> {
   }
 
   const path = resolve(repoRoot, value);
+  if (path.endsWith(".json")) {
+    return JSON.parse(await readFile(path, "utf8"));
+  }
   const mod = await import(pathToFileURL(path).href);
   return mod.openApiSpec ?? mod.default;
 }

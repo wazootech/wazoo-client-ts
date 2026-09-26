@@ -2,8 +2,20 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Wazoo Platform API",
-    "version": "1.0.0"
+    "version": "0.1.0",
+    "description": "Management-plane API for Wazoo users, Worlds, platform tokens, usage, limits, and beta billing."
   },
+  "servers": [
+    {
+      "url": "https://api.wazoo.dev",
+      "description": "Wazoo Platform API"
+    }
+  ],
+  "security": [
+    {
+      "bearerPlatformToken": []
+    }
+  ],
   "components": {
     "securitySchemes": {
       "bearerPlatformToken": {
@@ -59,7 +71,7 @@
           "worldId": {
             "type": "string"
           },
-          "worldUid": {
+          "slug": {
             "type": "string"
           },
           "displayName": {
@@ -124,7 +136,7 @@
             "type": "string",
             "format": "email"
           },
-          "worldId": {
+          "slug": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9-]{2,62}$",
             "description": "Resource ID matching ^[a-z][a-z0-9-]{2,62}$"
@@ -147,7 +159,7 @@
           }
         },
         "required": [
-          "worldId",
+          "slug",
           "world"
         ]
       },
