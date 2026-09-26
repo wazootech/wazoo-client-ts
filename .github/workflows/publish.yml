@@ -3,10 +3,6 @@ name: Publish
 on:
   push:
     branches: [main]
-    paths: ["deno.json"]
-  release:
-    types: [published]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -24,21 +20,49 @@ jobs:
         run: deno ci
       - name: Run CI checks
         run: deno task ci
-      - name: Resolve package name and version
-        id: pkg
+      - name: Publish dry run
+        run: deno task publish:dry
+      - name: Check whether this merge is a release
+        id: release-check
         run: |
-          echo "name=$(jq -r .name deno.json)" >> "$GITHUB_OUTPUT"
-          echo "version=$(jq -r .version deno.json)" >> "$GITHUB_OUTPUT"
-      - name: Check whether this version is already published
-        id: check
-        run: |
-          if curl -fsS "https://jsr.io/${{ steps.pkg.outputs.name }}/meta.json" \
-            | jq -e --arg v "${{ steps.pkg.outputs.version }}" '.versions | has($v)' > /dev/null; then
-            echo "needed=false" >> "$GITHUB_OUTPUT"
-            echo "${{ steps.pkg.outputs.name }}@${{ steps.pkg.outputs.version }} is already on JSR; nothing to publish."
+          version=$(deno eval 'console.log(JSON.parse(await Deno.readTextFile("deno.json")).version)')
+          curl -sS https://jsr.io/@wazoo/client/meta.json -o /tmp/jsr-meta.json
+          latest=$(deno eval 'console.log(JSON.parse(await Deno.readTextFile("/tmp/jsr-meta.json")).latest)')
+          echo "local version: $version / published latest: $latest"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "published=$latest" >> "$GITHUB_OUTPUT"
+          if [ "$version" = "$latest" ]; then
+            echo "match=true" >> "$GITHUB_OUTPUT"
           else
-            echo "needed=true" >> "$GITHUB_OUTPUT"
+            echo "match=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Publish package
-        if: steps.check.outputs.needed == 'true'
-        run: deno publish
+      # Only release when deno.json's version differs from the published latest.
+      # deno publish exits 0 when the version is already on JSR, so a stale
+      # version would otherwise make this workflow a silent no-op (which is how
+      # 0.1.0 shipped without the MemoryStore export); when a bump IS expected
+      # but publish still skips, fail loudly. Routine non-release merges
+      # (version unchanged) skip cleanly instead of failing the job.
+      - name: Publish to JSR
+        if: steps.release-check.outputs.match == 'false'
+        run: |
+          # Capture without losing the failure: under the step's default
+          # `bash -e`, `output=$(deno publish 2>&1)` aborts the script before
+          # echo when publish exits nonzero, which silently discarded the
+          # actual error.
+          set +e
+          output=$(deno publish 2>&1)
+          status=$?
+          set -e
+          echo "$output"
+          if [ "$status" -ne 0 ]; then
+            echo "::error::deno publish failed with exit $status (full output above)."
+            exit 1
+          fi
+          if echo "$output" | grep -q "already published"; then
+            echo "::error::deno publish skipped even though local version ${{ steps.release-check.outputs.version }} differs from published ${{ steps.release-check.outputs.published }}. Investigate before merging to main."
+            exit 1
+          fi
+      - name: No release needed
+        if: steps.release-check.outputs.match == 'true'
+        run: |
+          echo "::notice::Version ${{ steps.release-check.outputs.version }} already published on JSR; nothing new to release on this merge."

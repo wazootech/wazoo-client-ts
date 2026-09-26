@@ -15,7 +15,11 @@ This repository contains the TypeScript Wazoo client package.
 
 ## Publishing
 
-`@wazoo/client` is published to JSR. Bump `version` in `deno.json`, merge to
-`main`, and `.github/workflows/publish.yml` publishes it — no GitHub release
-needed. The workflow also runs on a published release and on manual dispatch,
-and skips any version that is already on JSR, so re-running never fails.
+`@wazoo/client` is published to JSR. Bump `version` in `deno.json` and merge to
+`main` — `.github/workflows/publish.yml` runs on every push to `main`, compares
+the local version against the published latest, and only releases when they
+differ. No GitHub release is needed. A merge that does not bump the version
+skips cleanly; a merge that bumps it but still results in "already published"
+fails the job instead of passing silently. This mirrors the same workflow in
+`sparql-engine`, `worlds-cloudflare`, and the other `@wazoo`/`@worlds` JSR
+packages.
