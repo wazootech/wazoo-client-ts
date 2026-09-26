@@ -12,3 +12,10 @@ This repository contains the TypeScript Wazoo client package.
 - Run `deno task sync:openapi` to refresh `openapi/openapi.json` from the API
   spec.
 - Keep package exports, generated clients, and README examples aligned.
+
+## Publishing
+
+`@wazoo/client` is published to JSR. Bump `version` in `deno.json`, merge to
+`main`, and `.github/workflows/publish.yml` publishes it — no GitHub release
+needed. The workflow also runs on a published release and on manual dispatch,
+and skips any version that is already on JSR, so re-running never fails.
