@@ -5,7 +5,7 @@ export type ClientOptions = {
 };
 
 export type User = {
-    uid: string;
+    userId: string;
     email: string;
     displayName: string | null;
     state: 'ACTIVE';
@@ -14,7 +14,6 @@ export type User = {
 
 export type World = {
     name: string;
-    uid: string;
     worldId: string;
     slug?: string;
     displayName: string;
@@ -51,7 +50,7 @@ export type UpdateWorldRequest = {
 };
 
 export type WorldToken = {
-    uid: string;
+    tokenId: string;
     name: string;
     namespace?: string;
     worldId?: string;
@@ -64,7 +63,7 @@ export type WorldTokenCreateRequest = {
 };
 
 export type PlatformToken = {
-    uid: string;
+    tokenId: string;
     name: string;
     scope?: string;
     last_used_at?: string | null;
@@ -73,7 +72,7 @@ export type PlatformToken = {
 };
 
 export type PlatformTokenCreateResponse = {
-    uid: string;
+    tokenId: string;
     name: string;
     token: string;
 };
@@ -89,6 +88,7 @@ export type PlatformTokenCreateRequest = {
 
 export type UsageEvent = {
     name: string;
+    eventId: string;
     metric: string;
     quantity: number;
     unit: string;
@@ -252,7 +252,7 @@ export type InitiateAccountDeletionResponses = {
      */
     201: {
         deletion: {
-            uid: string;
+            deletionRequestId: string;
             expiresAt: string;
         };
         confirmationToken: string;
@@ -290,7 +290,6 @@ export type ExportUserMeResponses = {
     200: {
         user: User;
         worlds: Array<{
-            uid: string;
             worldId: string;
             displayName: string;
             state: string;
@@ -298,7 +297,7 @@ export type ExportUserMeResponses = {
             deleteTime?: string | null;
         }>;
         apiTokens: Array<{
-            uid: string;
+            tokenId: string;
             name: string;
             scope: string;
             createTime?: string;
@@ -583,7 +582,9 @@ export type CreateWorldTokenResponses = {
      * Created World token
      */
     201: {
-        token: WorldToken;
+        token: WorldToken & {
+            token: string;
+        };
     };
 };
 
@@ -593,7 +594,7 @@ export type DeleteWorldTokenData = {
     body?: never;
     path: {
         worldId: string;
-        tokenUid: string;
+        tokenId: string;
     };
     query?: {
         /**
@@ -601,7 +602,7 @@ export type DeleteWorldTokenData = {
          */
         email?: string;
     };
-    url: '/v1/worlds/{worldId}/auth/tokens/{tokenUid}';
+    url: '/v1/worlds/{worldId}/auth/tokens/{tokenId}';
 };
 
 export type DeleteWorldTokenResponses = {

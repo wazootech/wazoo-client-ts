@@ -152,7 +152,7 @@ export const createWorldToken = <ThrowOnError extends boolean = false>(options: 
  */
 export const deleteWorldToken = <ThrowOnError extends boolean = false>(options: Options<DeleteWorldTokenData, ThrowOnError>): RequestResult<DeleteWorldTokenResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeleteWorldTokenResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/worlds/{worldId}/auth/tokens/{tokenUid}',
+    url: '/v1/worlds/{worldId}/auth/tokens/{tokenId}',
     ...options
 });
 
