@@ -13,7 +13,9 @@ export type User = {
 };
 
 export type World = {
-    name: string;
+    /**
+     * World ID minted by worlds-api in w_<uuid> form.
+     */
     id: string;
     displayName: string;
     region: string;
@@ -83,7 +85,6 @@ export type PlatformTokenCreateRequest = {
 };
 
 export type UsageEvent = {
-    name: string;
     id: string;
     metric: string;
     quantity: number;
@@ -102,6 +103,7 @@ export type QuotaSummary = {
 };
 
 export type LimitSummary = {
+    id: string;
     metric: string;
     quantity: number;
     limitQuantity: number;
@@ -122,6 +124,7 @@ export type UsageRecordRequest = {
 };
 
 export type Billing = {
+    id: string;
     world: string;
     state: string;
     provider: string;
@@ -690,10 +693,10 @@ export type CreatePlatformTokenResponse = CreatePlatformTokenResponses[keyof Cre
 export type DeletePlatformTokenData = {
     body?: never;
     path: {
-        tokenName: string;
+        tokenId: string;
     };
     query?: never;
-    url: '/v1/auth/api-tokens/{tokenName}';
+    url: '/v1/auth/api-tokens/{tokenId}';
 };
 
 export type DeletePlatformTokenResponses = {
@@ -701,29 +704,11 @@ export type DeletePlatformTokenResponses = {
      * Deleted platform token
      */
     200: {
-        token: string;
+        id: string;
     };
 };
 
 export type DeletePlatformTokenResponse = DeletePlatformTokenResponses[keyof DeletePlatformTokenResponses];
-
-export type CreateNamedPlatformTokenData = {
-    body?: PlatformTokenCreateRequest;
-    path: {
-        tokenName: string;
-    };
-    query?: never;
-    url: '/v1/auth/api-tokens/{tokenName}';
-};
-
-export type CreateNamedPlatformTokenResponses = {
-    /**
-     * Created platform token
-     */
-    201: PlatformTokenCreateResponse;
-};
-
-export type CreateNamedPlatformTokenResponse = CreateNamedPlatformTokenResponses[keyof CreateNamedPlatformTokenResponses];
 
 export type ValidatePlatformTokenData = {
     body?: never;
@@ -933,6 +918,7 @@ export type CancelWorldSubscriptionResponses = {
      */
     200: {
         billing: {
+            id: string;
             world: string;
             state: string;
             provider: string;
