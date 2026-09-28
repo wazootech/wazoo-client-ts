@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.ts';
-import type { CancelWorldSubscriptionData, CancelWorldSubscriptionErrors, CancelWorldSubscriptionResponses, CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteUserMeData, DeleteUserMeErrors, DeleteUserMeResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, ExportUserMeData, ExportUserMeErrors, ExportUserMeResponses, GetHealthData, GetHealthResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, InitiateAccountDeletionData, InitiateAccountDeletionErrors, InitiateAccountDeletionResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen.ts';
+import type { CancelWorldSubscriptionData, CancelWorldSubscriptionErrors, CancelWorldSubscriptionResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteUserMeData, DeleteUserMeErrors, DeleteUserMeResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, ExportUserMeData, ExportUserMeErrors, ExportUserMeResponses, GetHealthData, GetHealthResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, InitiateAccountDeletionData, InitiateAccountDeletionErrors, InitiateAccountDeletionResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -152,7 +152,7 @@ export const createWorldToken = <ThrowOnError extends boolean = false>(options: 
  */
 export const deleteWorldToken = <ThrowOnError extends boolean = false>(options: Options<DeleteWorldTokenData, ThrowOnError>): RequestResult<DeleteWorldTokenResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeleteWorldTokenResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/worlds/{worldId}/auth/tokens/{tokenUid}',
+    url: '/v1/worlds/{worldId}/auth/tokens/{tokenId}',
     ...options
 });
 
@@ -183,21 +183,8 @@ export const createPlatformToken = <ThrowOnError extends boolean = false>(option
  */
 export const deletePlatformToken = <ThrowOnError extends boolean = false>(options: Options<DeletePlatformTokenData, ThrowOnError>): RequestResult<DeletePlatformTokenResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeletePlatformTokenResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/auth/api-tokens/{tokenName}',
+    url: '/v1/auth/api-tokens/{tokenId}',
     ...options
-});
-
-/**
- * Create named platform token
- */
-export const createNamedPlatformToken = <ThrowOnError extends boolean = false>(options: Options<CreateNamedPlatformTokenData, ThrowOnError>): RequestResult<CreateNamedPlatformTokenResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateNamedPlatformTokenResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/auth/api-tokens/{tokenName}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
 });
 
 /**
