@@ -53,8 +53,9 @@ deno task ci
 ```
 
 Run `deno task sync:openapi` to refresh `openapi/openapi.json`. By default, it
-reads `../wazoo-api/src/openapi/spec.ts` for local development. Set
-`WAZOO_API_OPENAPI_URL=https://api.wazoo.dev/openapi.json` to sync from a
+reads the sibling `../wazoo-api/openapi/openapi.json`, which is the committed
+source of record. Set `WAZOO_API_OPENAPI_SOURCE` to use another local spec file,
+or `WAZOO_API_OPENAPI_URL=https://api.wazoo.dev/openapi.json` to sync from a
 deployed API.
 
 Run `deno task generate` to regenerate `src/generated/` from the synced spec via

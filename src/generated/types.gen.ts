@@ -5,7 +5,7 @@ export type ClientOptions = {
 };
 
 export type User = {
-    userId: string;
+    id: string;
     email: string;
     displayName: string | null;
     state: 'ACTIVE';
@@ -14,8 +14,7 @@ export type User = {
 
 export type World = {
     name: string;
-    worldId: string;
-    slug?: string;
+    id: string;
     displayName: string;
     region: string;
     state: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
@@ -30,10 +29,6 @@ export type World = {
 export type CreateWorldRequest = {
     ownerEmail?: string;
     email?: string;
-    /**
-     * Resource ID matching ^[a-z][a-z0-9-]{2,62}$
-     */
-    slug: string;
     world: {
         displayName: string;
         region?: string;
@@ -50,12 +45,13 @@ export type UpdateWorldRequest = {
 };
 
 export type WorldToken = {
-    tokenId: string;
+    id: string;
     name: string;
     namespace?: string;
     worldId?: string;
     scopes?: Array<string>;
     createTime?: string;
+    token?: string;
 };
 
 export type WorldTokenCreateRequest = {
@@ -63,7 +59,7 @@ export type WorldTokenCreateRequest = {
 };
 
 export type PlatformToken = {
-    tokenId: string;
+    id: string;
     name: string;
     scope?: string;
     last_used_at?: string | null;
@@ -72,7 +68,7 @@ export type PlatformToken = {
 };
 
 export type PlatformTokenCreateResponse = {
-    tokenId: string;
+    id: string;
     name: string;
     token: string;
 };
@@ -88,7 +84,7 @@ export type PlatformTokenCreateRequest = {
 
 export type UsageEvent = {
     name: string;
-    eventId: string;
+    id: string;
     metric: string;
     quantity: number;
     unit: string;
@@ -252,7 +248,7 @@ export type InitiateAccountDeletionResponses = {
      */
     201: {
         deletion: {
-            deletionRequestId: string;
+            id: string;
             expiresAt: string;
         };
         confirmationToken: string;
@@ -290,19 +286,20 @@ export type ExportUserMeResponses = {
     200: {
         user: User;
         worlds: Array<{
-            worldId: string;
+            id: string;
             displayName: string;
             state: string;
             createTime?: string;
             deleteTime?: string | null;
         }>;
         apiTokens: Array<{
-            tokenId: string;
+            id: string;
             name: string;
             scope: string;
             createTime?: string;
         }>;
         usageEvents: Array<{
+            id: string;
             metric: string;
             quantity: number;
             unit: string;
@@ -354,6 +351,15 @@ export type CreateWorldErrors = {
         };
     };
     /**
+     * World ID already exists
+     */
+    409: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
      * Quota exceeded
      */
     429: {
@@ -385,6 +391,9 @@ export type CreateWorldResponse = CreateWorldResponses[keyof CreateWorldResponse
 export type DeleteWorldData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -424,6 +433,9 @@ export type DeleteWorldResponse = DeleteWorldResponses[keyof DeleteWorldResponse
 export type GetWorldData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -463,6 +475,9 @@ export type GetWorldResponse = GetWorldResponses[keyof GetWorldResponses];
 export type UpdateWorldData = {
     body: UpdateWorldRequest;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -502,6 +517,9 @@ export type UpdateWorldResponse = UpdateWorldResponses[keyof UpdateWorldResponse
 export type UndeleteWorldData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -541,6 +559,9 @@ export type UndeleteWorldResponse = UndeleteWorldResponses[keyof UndeleteWorldRe
 export type ListWorldTokensData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -566,6 +587,9 @@ export type ListWorldTokensResponse = ListWorldTokensResponses[keyof ListWorldTo
 export type CreateWorldTokenData = {
     body?: WorldTokenCreateRequest;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -582,9 +606,7 @@ export type CreateWorldTokenResponses = {
      * Created World token
      */
     201: {
-        token: WorldToken & {
-            token: string;
-        };
+        token: WorldToken;
     };
 };
 
@@ -593,6 +615,9 @@ export type CreateWorldTokenResponse = CreateWorldTokenResponses[keyof CreateWor
 export type DeleteWorldTokenData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
         tokenId: string;
     };
@@ -721,6 +746,9 @@ export type ValidatePlatformTokenResponse = ValidatePlatformTokenResponses[keyof
 export type GetWorldUsageData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -753,6 +781,9 @@ export type GetWorldUsageResponse = GetWorldUsageResponses[keyof GetWorldUsageRe
 export type RecordWorldUsageData = {
     body: UsageRecordRequest;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: never;
@@ -791,6 +822,9 @@ export type RecordWorldUsageResponse = RecordWorldUsageResponses[keyof RecordWor
 export type GetWorldLimitsData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -805,6 +839,7 @@ export type GetWorldLimitsResponses = {
      */
     200: {
         limits: Array<{
+            id: string;
             metric: string;
             limitQuantity: number;
         }>;
@@ -816,6 +851,9 @@ export type GetWorldLimitsResponse = GetWorldLimitsResponses[keyof GetWorldLimit
 export type GetWorldBillingData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -839,6 +877,9 @@ export type GetWorldBillingResponse = GetWorldBillingResponses[keyof GetWorldBil
 export type ListWorldInvoicesData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -861,6 +902,9 @@ export type ListWorldInvoicesResponse = ListWorldInvoicesResponses[keyof ListWor
 export type CancelWorldSubscriptionData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -904,6 +948,9 @@ export type CancelWorldSubscriptionResponse = CancelWorldSubscriptionResponses[k
 export type OpenWorldBillingPortalData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
