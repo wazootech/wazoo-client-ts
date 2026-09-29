@@ -52,6 +52,13 @@ const response = await getWorld({
 console.log(response.data?.world);
 ```
 
+## World identity
+
+Platform World resources expose one identifier, `id`. Creation accepts a display
+name, not a caller-selected ID or slug; use the returned `world.id` for path
+arguments named `worldId`. `worldId` is the route parameter name, not a second
+resource field.
+
 ## Development
 
 Requires Deno (version pinned in `.tool-versions`).

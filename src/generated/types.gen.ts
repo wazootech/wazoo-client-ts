@@ -155,6 +155,36 @@ export type GetHealthResponses = {
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
 
+export type GetReadinessData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/ready';
+};
+
+export type GetReadinessErrors = {
+    /**
+     * World identity schema is unavailable or incompatible
+     */
+    503: {
+        status: 'not_ready';
+        error: string;
+    };
+};
+
+export type GetReadinessError = GetReadinessErrors[keyof GetReadinessErrors];
+
+export type GetReadinessResponses = {
+    /**
+     * World identity schema is ready
+     */
+    200: {
+        status: 'ready';
+    };
+};
+
+export type GetReadinessResponse = GetReadinessResponses[keyof GetReadinessResponses];
+
 export type DeleteUserMeData = {
     body: {
         confirmationToken: string;
