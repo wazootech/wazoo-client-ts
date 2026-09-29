@@ -13,10 +13,10 @@ export type User = {
 };
 
 export type World = {
-    name: string;
-    uid: string;
-    worldId: string;
-    slug?: string;
+    /**
+     * World ID minted by worlds-api in w_<uuid> form.
+     */
+    id: string;
     displayName: string;
     region: string;
     state: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
@@ -31,10 +31,6 @@ export type World = {
 export type CreateWorldRequest = {
     ownerEmail?: string;
     email?: string;
-    /**
-     * Resource ID matching ^[a-z][a-z0-9-]{2,62}$
-     */
-    slug: string;
     world: {
         displayName: string;
         region?: string;
