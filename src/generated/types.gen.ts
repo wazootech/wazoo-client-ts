@@ -13,10 +13,10 @@ export type User = {
 };
 
 export type World = {
-    name: string;
-    uid: string;
-    worldId: string;
-    slug?: string;
+    /**
+     * World ID minted by worlds-api in w_<uuid> form.
+     */
+    id: string;
     displayName: string;
     region: string;
     state: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
@@ -31,10 +31,6 @@ export type World = {
 export type CreateWorldRequest = {
     ownerEmail?: string;
     email?: string;
-    /**
-     * Resource ID matching ^[a-z][a-z0-9-]{2,62}$
-     */
-    slug: string;
     world: {
         displayName: string;
         region?: string;
@@ -386,6 +382,9 @@ export type CreateWorldResponse = CreateWorldResponses[keyof CreateWorldResponse
 export type DeleteWorldData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -425,6 +424,9 @@ export type DeleteWorldResponse = DeleteWorldResponses[keyof DeleteWorldResponse
 export type GetWorldData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -464,6 +466,9 @@ export type GetWorldResponse = GetWorldResponses[keyof GetWorldResponses];
 export type UpdateWorldData = {
     body: UpdateWorldRequest;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
@@ -503,6 +508,9 @@ export type UpdateWorldResponse = UpdateWorldResponses[keyof UpdateWorldResponse
 export type UndeleteWorldData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<uuid> form.
+         */
         worldId: string;
     };
     query?: {
