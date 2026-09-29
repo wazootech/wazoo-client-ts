@@ -1,6 +1,6 @@
 {
   "name": "@wazoo/client",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "nodeModulesDir": "auto",
   "exports": {
@@ -32,10 +32,11 @@
     "fmt:check": "deno fmt --check",
     "lint": "deno lint",
     "check": "deno check",
+    "test": "deno test --allow-read=openapi/openapi.json",
     "publish:dry": "deno publish --dry-run --allow-dirty",
     "ci": {
-      "description": "Formats, lints, and checks the code",
-      "dependencies": ["fmt:check", "lint", "check"]
+      "description": "Formats, lints, checks, and tests the code",
+      "dependencies": ["fmt:check", "lint", "check", "test"]
     }
   }
 }

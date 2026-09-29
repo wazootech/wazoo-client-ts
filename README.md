@@ -29,20 +29,35 @@ npx jsr add @wazoo/client
 ## Usage
 
 ```ts
-import { createClient, listWorlds } from "@wazoo/client";
+import { createClient, createWorld, getWorld } from "@wazoo/client";
 
 const client = createClient({
   baseUrl: "https://api.wazoo.dev",
   auth: process.env.WAZOO_PLATFORM_TOKEN,
 });
 
-const response = await listWorlds({
+const created = await createWorld({
   client,
-  query: { email: "user@example.com" },
+  body: { world: { displayName: "Research" } },
+});
+const worldId = created.data?.world.id;
+
+if (!worldId) throw new Error("World creation did not return an ID.");
+
+const response = await getWorld({
+  client,
+  path: { worldId },
 });
 
-console.log(response.data?.worlds);
+console.log(response.data?.world);
 ```
+
+## World identity
+
+Platform World resources expose one identifier, `id`. Creation accepts a display
+name, not a caller-selected ID or slug; use the returned `world.id` for path
+arguments named `worldId`. `worldId` is the route parameter name, not a second
+resource field.
 
 ## Development
 
@@ -53,7 +68,8 @@ deno task ci
 ```
 
 Run `deno task sync:openapi` to refresh `openapi/openapi.json`. By default, it
-reads `../wazoo-api/src/openapi/spec.ts` for local development. Set
+reads `../wazoo-api/openapi/openapi.json`, the committed source of record. Set
+`WAZOO_API_OPENAPI_SOURCE` to use another local spec file, or
 `WAZOO_API_OPENAPI_URL=https://api.wazoo.dev/openapi.json` to sync from a
 deployed API.
 
