@@ -46,6 +46,21 @@ Deno.test("World and create schemas use server-minted identity", async () => {
   const worldPaths = Object.keys(spec.paths).filter((path) =>
     /^\/v1\/worlds\/\{worldId\}(\/undelete)?$/.test(path)
   );
+  const worldIdPattern =
+    "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
+  const pathItems = Object.values(spec.paths) as Array<
+    Record<string, unknown>
+  >;
+  const worldIdParameters = pathItems.flatMap((pathItem) =>
+    Object.values(pathItem).flatMap((operation) =>
+      (operation as {
+        parameters?: Array<{
+          name?: string;
+          schema?: { pattern?: string };
+        }>;
+      }).parameters ?? []
+    )
+  ).filter((parameter) => parameter.name === "worldId");
 
   assert("id" in world.properties, "World must expose id");
   assert(
@@ -66,6 +81,16 @@ Deno.test("World and create schemas use server-minted identity", async () => {
   assert(
     worldPaths.every((path) => path.includes("{worldId}")),
     "World operations must use the worldId path parameter",
+  );
+  assert(
+    worldIdParameters.length > 0,
+    "World-scoped operations must define worldId path parameters",
+  );
+  assert(
+    worldIdParameters.every((parameter) =>
+      parameter.schema?.pattern === worldIdPattern
+    ),
+    "Every worldId path parameter must validate a server-minted UUIDv4 ID",
   );
 });
 

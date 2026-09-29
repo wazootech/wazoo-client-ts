@@ -14,7 +14,7 @@ export type User = {
 
 export type World = {
     /**
-     * World ID minted by worlds-api in w_<uuid> form.
+     * World ID minted by worlds-api in w_<UUIDv4> form.
      */
     id: string;
     displayName: string;
@@ -26,6 +26,13 @@ export type World = {
     updateTime?: string;
     deleteTime?: string;
     expireTime?: string;
+};
+
+export type ErrorResponse = {
+    error: {
+        code: string;
+        message: string;
+    };
 };
 
 export type CreateWorldRequest = {
@@ -351,6 +358,10 @@ export type CreateWorldErrors = {
         };
     };
     /**
+     * World ID already exists
+     */
+    409: ErrorResponse;
+    /**
      * Quota exceeded
      */
     429: {
@@ -364,6 +375,10 @@ export type CreateWorldErrors = {
             usagePercent?: number;
         };
     };
+    /**
+     * World provisioning failed
+     */
+    502: ErrorResponse;
 };
 
 export type CreateWorldError = CreateWorldErrors[keyof CreateWorldErrors];
@@ -383,7 +398,7 @@ export type DeleteWorldData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<uuid> form.
+         * World ID minted by worlds-api in w_<UUIDv4> form.
          */
         worldId: string;
     };
@@ -425,7 +440,7 @@ export type GetWorldData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<uuid> form.
+         * World ID minted by worlds-api in w_<UUIDv4> form.
          */
         worldId: string;
     };
@@ -467,7 +482,7 @@ export type UpdateWorldData = {
     body: UpdateWorldRequest;
     path: {
         /**
-         * World ID minted by worlds-api in w_<uuid> form.
+         * World ID minted by worlds-api in w_<UUIDv4> form.
          */
         worldId: string;
     };
@@ -509,7 +524,7 @@ export type UndeleteWorldData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<uuid> form.
+         * World ID minted by worlds-api in w_<UUIDv4> form.
          */
         worldId: string;
     };
@@ -550,6 +565,9 @@ export type UndeleteWorldResponse = UndeleteWorldResponses[keyof UndeleteWorldRe
 export type ListWorldTokensData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
     };
     query?: {
@@ -575,6 +593,9 @@ export type ListWorldTokensResponse = ListWorldTokensResponses[keyof ListWorldTo
 export type CreateWorldTokenData = {
     body?: WorldTokenCreateRequest;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
     };
     query?: {
@@ -600,6 +621,9 @@ export type CreateWorldTokenResponse = CreateWorldTokenResponses[keyof CreateWor
 export type DeleteWorldTokenData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
         tokenUid: string;
     };
@@ -728,6 +752,9 @@ export type ValidatePlatformTokenResponse = ValidatePlatformTokenResponses[keyof
 export type GetWorldUsageData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
     };
     query?: {
@@ -760,6 +787,9 @@ export type GetWorldUsageResponse = GetWorldUsageResponses[keyof GetWorldUsageRe
 export type RecordWorldUsageData = {
     body: UsageRecordRequest;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
     };
     query?: never;
@@ -798,6 +828,9 @@ export type RecordWorldUsageResponse = RecordWorldUsageResponses[keyof RecordWor
 export type GetWorldLimitsData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
     };
     query?: {
@@ -823,6 +856,9 @@ export type GetWorldLimitsResponse = GetWorldLimitsResponses[keyof GetWorldLimit
 export type GetWorldBillingData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
     };
     query?: {
@@ -846,6 +882,9 @@ export type GetWorldBillingResponse = GetWorldBillingResponses[keyof GetWorldBil
 export type ListWorldInvoicesData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
     };
     query?: {
@@ -868,6 +907,9 @@ export type ListWorldInvoicesResponse = ListWorldInvoicesResponses[keyof ListWor
 export type CancelWorldSubscriptionData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
     };
     query?: {
@@ -911,6 +953,9 @@ export type CancelWorldSubscriptionResponse = CancelWorldSubscriptionResponses[k
 export type OpenWorldBillingPortalData = {
     body?: never;
     path: {
+        /**
+         * World ID minted by worlds-api in w_<UUIDv4> form.
+         */
         worldId: string;
     };
     query?: {

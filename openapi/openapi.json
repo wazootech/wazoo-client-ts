@@ -65,7 +65,7 @@
           "id": {
             "type": "string",
             "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-            "description": "World ID minted by worlds-api in w_<uuid> form."
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form."
           },
           "displayName": {
             "type": "string"
@@ -114,6 +114,29 @@
           "state",
           "restorable",
           "backend"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          }
+        },
+        "required": [
+          "error"
         ]
       },
       "CreateWorldRequest": {
@@ -1047,6 +1070,16 @@
               }
             }
           },
+          "409": {
+            "description": "World ID already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "429": {
             "description": "Quota exceeded",
             "content": {
@@ -1094,6 +1127,16 @@
                 }
               }
             }
+          },
+          "502": {
+            "description": "World provisioning failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1120,12 +1163,12 @@
             "schema": {
               "type": "string",
               "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-              "description": "World ID minted by worlds-api in w_<uuid> form."
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
-            "in": "path",
-            "description": "World ID minted by worlds-api in w_<uuid> form."
+            "in": "path"
           },
           {
             "schema": {
@@ -1210,12 +1253,12 @@
             "schema": {
               "type": "string",
               "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-              "description": "World ID minted by worlds-api in w_<uuid> form."
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
-            "in": "path",
-            "description": "World ID minted by worlds-api in w_<uuid> form."
+            "in": "path"
           },
           {
             "schema": {
@@ -1310,12 +1353,12 @@
             "schema": {
               "type": "string",
               "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-              "description": "World ID minted by worlds-api in w_<uuid> form."
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
-            "in": "path",
-            "description": "World ID minted by worlds-api in w_<uuid> form."
+            "in": "path"
           },
           {
             "schema": {
@@ -1402,12 +1445,12 @@
             "schema": {
               "type": "string",
               "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
-              "description": "World ID minted by worlds-api in w_<uuid> form."
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
-            "in": "path",
-            "description": "World ID minted by worlds-api in w_<uuid> form."
+            "in": "path"
           },
           {
             "schema": {
@@ -1492,9 +1535,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           },
@@ -1552,9 +1598,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           },
@@ -1620,9 +1669,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           },
@@ -1919,9 +1971,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           },
@@ -2029,9 +2084,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           }
@@ -2133,9 +2191,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           },
@@ -2205,9 +2266,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           },
@@ -2266,9 +2330,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           },
@@ -2326,9 +2393,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           },
@@ -2441,9 +2511,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "description": "World ID minted by worlds-api in w_<UUIDv4> form."
             },
             "required": true,
+            "description": "World ID minted by worlds-api in w_<UUIDv4> form.",
             "name": "worldId",
             "in": "path"
           },
