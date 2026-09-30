@@ -12,3 +12,10 @@ This repository contains the TypeScript Wazoo client package.
 - Run `deno task sync:openapi` to refresh `openapi/openapi.json` from the API
   spec.
 - Keep package exports, generated clients, and README examples aligned.
+
+## Cross-repo impact
+
+- You are consumed as a **published package**. A merged change here is not
+  available to `wazoo-console` or `wazoo-cli` until it is published, so a
+  downstream typecheck can fail against a stale published version even when
+  every PR involved is correct. Say which published version downstream needs.
