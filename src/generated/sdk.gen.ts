@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.ts';
-import type { CancelWorldSubscriptionData, CancelWorldSubscriptionErrors, CancelWorldSubscriptionResponses, CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteUserMeData, DeleteUserMeErrors, DeleteUserMeResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, ExportUserMeData, ExportUserMeErrors, ExportUserMeResponses, GetHealthData, GetHealthResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, InitiateAccountDeletionData, InitiateAccountDeletionErrors, InitiateAccountDeletionResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen.ts';
+import type { CancelWorldSubscriptionData, CancelWorldSubscriptionErrors, CancelWorldSubscriptionResponses, CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteUserMeData, DeleteUserMeErrors, DeleteUserMeResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, ExportUserMeData, ExportUserMeErrors, ExportUserMeResponses, GetHealthData, GetHealthResponses, GetReadinessData, GetReadinessErrors, GetReadinessResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, InitiateAccountDeletionData, InitiateAccountDeletionErrors, InitiateAccountDeletionResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -22,6 +22,13 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  * Get health
  */
 export const getHealth = <ThrowOnError extends boolean = false>(options?: Options<GetHealthData, ThrowOnError>): RequestResult<GetHealthResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetHealthResponses, unknown, ThrowOnError>({ url: '/health', ...options });
+
+/**
+ * Get readiness
+ *
+ * Returns ready only when the management database uses the canonical world-identity schema.
+ */
+export const getReadiness = <ThrowOnError extends boolean = false>(options?: Options<GetReadinessData, ThrowOnError>): RequestResult<GetReadinessResponses, GetReadinessErrors, ThrowOnError> => (options?.client ?? client).get<GetReadinessResponses, GetReadinessErrors, ThrowOnError>({ url: '/ready', ...options });
 
 /**
  * Delete the authenticated user's account (two-step confirmation)
