@@ -29,19 +29,28 @@ npx jsr add @wazoo/client
 ## Usage
 
 ```ts
-import { createClient, listWorlds } from "@wazoo/client";
+import { createClient, createWorld, getWorld } from "@wazoo/client";
 
 const client = createClient({
   baseUrl: "https://api.wazoo.dev",
   auth: process.env.WAZOO_PLATFORM_TOKEN,
 });
 
-const response = await listWorlds({
+const created = await createWorld({
   client,
-  query: { email: "user@example.com" },
+  body: { world: { displayName: "Research" } },
+});
+const worldId = created.data?.world.id;
+
+if (!worldId) throw new Error("World creation did not return an ID.");
+
+const response = await getWorld({
+  client,
+  path: { worldId },
 });
 
-console.log(response.data?.worlds);
+console.log(response.data?.world);
+}
 ```
 
 ## Development

@@ -62,17 +62,10 @@
       "World": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string"
-          },
-          "uid": {
-            "type": "string"
-          },
-          "worldId": {
-            "type": "string"
-          },
-          "slug": {
-            "type": "string"
+          "id": {
+            "type": "string",
+            "pattern": "^w_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "description": "World ID minted by worlds-api in w_<uuid> form."
           },
           "displayName": {
             "type": "string"
@@ -115,9 +108,7 @@
           }
         },
         "required": [
-          "name",
-          "uid",
-          "worldId",
+          "id",
           "displayName",
           "region",
           "state",
@@ -136,11 +127,6 @@
             "type": "string",
             "format": "email"
           },
-          "slug": {
-            "type": "string",
-            "pattern": "^[a-z][a-z0-9-]{2,62}$",
-            "description": "Resource ID matching ^[a-z][a-z0-9-]{2,62}$"
-          },
           "world": {
             "type": "object",
             "properties": {
@@ -155,13 +141,14 @@
             },
             "required": [
               "displayName"
-            ]
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
-          "slug",
           "world"
-        ]
+        ],
+        "additionalProperties": false
       },
       "UpdateWorldRequest": {
         "type": "object",
