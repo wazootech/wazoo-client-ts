@@ -323,8 +323,7 @@ export type ExportUserMeResponses = {
     200: {
         user: User;
         worlds: Array<{
-            uid: string;
-            worldId: string;
+            id: string;
             displayName: string;
             state: string;
             createTime?: string;
@@ -1007,3 +1006,56 @@ export type OpenWorldBillingPortalErrors = {
 };
 
 export type OpenWorldBillingPortalError = OpenWorldBillingPortalErrors[keyof OpenWorldBillingPortalErrors];
+
+export type ListAdminAuditEventsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        limit?: number;
+        offset?: number | null;
+    };
+    url: '/v1/admin/audit-events';
+};
+
+export type ListAdminAuditEventsErrors = {
+    /**
+     * Not authenticated
+     */
+    401: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Insufficient scope
+     */
+    403: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type ListAdminAuditEventsError = ListAdminAuditEventsErrors[keyof ListAdminAuditEventsErrors];
+
+export type ListAdminAuditEventsResponses = {
+    /**
+     * List of admin audit events
+     */
+    200: {
+        auditEvents: Array<{
+            uid: string;
+            actorTokenUid?: string | null;
+            action: string;
+            targetResourceName: string;
+            outcome: string;
+            errorCode?: string | null;
+            createTime: string;
+        }>;
+        total?: number;
+    };
+};
+
+export type ListAdminAuditEventsResponse = ListAdminAuditEventsResponses[keyof ListAdminAuditEventsResponses];

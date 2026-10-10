@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.ts';
-import type { CancelWorldSubscriptionData, CancelWorldSubscriptionErrors, CancelWorldSubscriptionResponses, CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteUserMeData, DeleteUserMeErrors, DeleteUserMeResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, ExportUserMeData, ExportUserMeErrors, ExportUserMeResponses, GetHealthData, GetHealthResponses, GetReadinessData, GetReadinessErrors, GetReadinessResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, InitiateAccountDeletionData, InitiateAccountDeletionErrors, InitiateAccountDeletionResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen.ts';
+import type { CancelWorldSubscriptionData, CancelWorldSubscriptionErrors, CancelWorldSubscriptionResponses, CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteUserMeData, DeleteUserMeErrors, DeleteUserMeResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, ExportUserMeData, ExportUserMeErrors, ExportUserMeResponses, GetHealthData, GetHealthResponses, GetReadinessData, GetReadinessErrors, GetReadinessResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, InitiateAccountDeletionData, InitiateAccountDeletionErrors, InitiateAccountDeletionResponses, ListAdminAuditEventsData, ListAdminAuditEventsErrors, ListAdminAuditEventsResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -280,5 +280,14 @@ export const cancelWorldSubscription = <ThrowOnError extends boolean = false>(op
 export const openWorldBillingPortal = <ThrowOnError extends boolean = false>(options: Options<OpenWorldBillingPortalData, ThrowOnError>): RequestResult<unknown, OpenWorldBillingPortalErrors, ThrowOnError> => (options.client ?? client).post<unknown, OpenWorldBillingPortalErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/worlds/{worldId}/billing/openPortal',
+    ...options
+});
+
+/**
+ * List admin audit events
+ */
+export const listAdminAuditEvents = <ThrowOnError extends boolean = false>(options?: Options<ListAdminAuditEventsData, ThrowOnError>): RequestResult<ListAdminAuditEventsResponses, ListAdminAuditEventsErrors, ThrowOnError> => (options?.client ?? client).get<ListAdminAuditEventsResponses, ListAdminAuditEventsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/admin/audit-events',
     ...options
 });
