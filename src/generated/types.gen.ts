@@ -14,7 +14,7 @@ export type User = {
 
 export type World = {
     /**
-     * World ID minted by worlds-api in w_<UUIDv4> form.
+     * World ID minted by worlds-api in w_<ULID> form.
      */
     id: string;
     displayName: string;
@@ -427,7 +427,7 @@ export type DeleteWorldData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -469,7 +469,7 @@ export type GetWorldData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -511,7 +511,7 @@ export type UpdateWorldData = {
     body: UpdateWorldRequest;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -553,7 +553,7 @@ export type UndeleteWorldData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -595,7 +595,7 @@ export type ListWorldTokensData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -623,7 +623,7 @@ export type CreateWorldTokenData = {
     body?: WorldTokenCreateRequest;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -651,7 +651,7 @@ export type DeleteWorldTokenData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
         tokenUid: string;
@@ -782,7 +782,7 @@ export type GetWorldUsageData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -817,7 +817,7 @@ export type RecordWorldUsageData = {
     body: UsageRecordRequest;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -858,7 +858,7 @@ export type GetWorldLimitsData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -886,7 +886,7 @@ export type GetWorldBillingData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -912,7 +912,7 @@ export type ListWorldInvoicesData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -937,7 +937,7 @@ export type CancelWorldSubscriptionData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
@@ -983,7 +983,7 @@ export type OpenWorldBillingPortalData = {
     body?: never;
     path: {
         /**
-         * World ID minted by worlds-api in w_<UUIDv4> form.
+         * World ID minted by worlds-api in w_<ULID> form.
          */
         worldId: string;
     };
