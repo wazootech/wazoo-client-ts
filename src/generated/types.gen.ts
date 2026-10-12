@@ -4,6 +4,60 @@ export type ClientOptions = {
     baseUrl: 'https://api.wazoo.dev' | (string & {});
 };
 
+/**
+ * Always `{ ok: true }` for accepted, rate-limited, unconfigured, or empty requests, so the endpoint is not an oracle for allowlist membership.
+ */
+export type LoginResponse = {
+    ok: true;
+};
+
+export type ErrorResponse = {
+    error: {
+        code: string;
+        message: string;
+    };
+};
+
+export type LoginRequest = {
+    /**
+     * Email address to send the magic-link code to. Matched case-insensitively.
+     */
+    email: string;
+};
+
+export type VerifyResponse = {
+    /**
+     * Platform session token (wzp_).
+     */
+    token: string;
+};
+
+export type VerifyRequest = {
+    email: string;
+    /**
+     * WorkOS magic-auth code.
+     */
+    code: string;
+    /**
+     * Required `true` when the email does not yet have an account (13+ age gate).
+     */
+    ageConfirmed?: boolean;
+};
+
+export type WorkosSessionResponse = {
+    token: string;
+    expiresAt: string;
+};
+
+export type WorkosSessionRequest = {
+    email: string;
+    displayName?: string;
+    /**
+     * Required `true` when the email does not yet have an account (13+ age gate).
+     */
+    ageConfirmed?: boolean;
+};
+
 export type User = {
     uid: string;
     email: string;
@@ -26,13 +80,6 @@ export type World = {
     updateTime?: string;
     deleteTime?: string;
     expireTime?: string;
-};
-
-export type ErrorResponse = {
-    error: {
-        code: string;
-        message: string;
-    };
 };
 
 export type CreateWorldRequest = {
@@ -184,6 +231,101 @@ export type GetReadinessResponses = {
 };
 
 export type GetReadinessResponse = GetReadinessResponses[keyof GetReadinessResponses];
+
+export type LoginData = {
+    body?: LoginRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/auth/login';
+};
+
+export type LoginErrors = {
+    /**
+     * Email is not on the private beta allowlist
+     */
+    403: ErrorResponse;
+};
+
+export type LoginError = LoginErrors[keyof LoginErrors];
+
+export type LoginResponses = {
+    /**
+     * Request accepted
+     */
+    200: LoginResponse;
+};
+
+export type LoginResponse2 = LoginResponses[keyof LoginResponses];
+
+export type VerifyLoginData = {
+    body?: VerifyRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/auth/verify';
+};
+
+export type VerifyLoginErrors = {
+    /**
+     * INVALID_ARGUMENT, INVALID_CODE, EXPIRED, or AGE_GATE_REQUIRED
+     */
+    400: ErrorResponse;
+    /**
+     * Authentication failed
+     */
+    401: ErrorResponse;
+    /**
+     * Too many attempts
+     */
+    429: ErrorResponse;
+    /**
+     * Auth is not configured
+     */
+    500: ErrorResponse;
+};
+
+export type VerifyLoginError = VerifyLoginErrors[keyof VerifyLoginErrors];
+
+export type VerifyLoginResponses = {
+    /**
+     * Session token
+     */
+    201: VerifyResponse;
+};
+
+export type VerifyLoginResponse = VerifyLoginResponses[keyof VerifyLoginResponses];
+
+export type CreateWorkosSessionData = {
+    body?: WorkosSessionRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/auth/workos-session';
+};
+
+export type CreateWorkosSessionErrors = {
+    /**
+     * INVALID_ARGUMENT or AGE_GATE_REQUIRED
+     */
+    400: ErrorResponse;
+    /**
+     * Missing or invalid platform token
+     */
+    401: ErrorResponse;
+    /**
+     * Admin scope required
+     */
+    403: ErrorResponse;
+};
+
+export type CreateWorkosSessionError = CreateWorkosSessionErrors[keyof CreateWorkosSessionErrors];
+
+export type CreateWorkosSessionResponses = {
+    /**
+     * Console session token
+     */
+    201: WorkosSessionResponse;
+};
+
+export type CreateWorkosSessionResponse = CreateWorkosSessionResponses[keyof CreateWorkosSessionResponses];
 
 export type DeleteUserMeData = {
     body: {
