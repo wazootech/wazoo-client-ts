@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.ts';
-import type { CancelWorldSubscriptionData, CancelWorldSubscriptionErrors, CancelWorldSubscriptionResponses, CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorkosSessionData, CreateWorkosSessionErrors, CreateWorkosSessionResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteUserMeData, DeleteUserMeErrors, DeleteUserMeResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, ExportUserMeData, ExportUserMeErrors, ExportUserMeResponses, GetHealthData, GetHealthResponses, GetReadinessData, GetReadinessErrors, GetReadinessResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, InitiateAccountDeletionData, InitiateAccountDeletionErrors, InitiateAccountDeletionResponses, ListAdminAuditEventsData, ListAdminAuditEventsErrors, ListAdminAuditEventsResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, LoginData, LoginErrors, LoginResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses, VerifyLoginData, VerifyLoginErrors, VerifyLoginResponses } from './types.gen.ts';
+import type { CancelWorldSubscriptionData, CancelWorldSubscriptionErrors, CancelWorldSubscriptionResponses, CreateBillingPortalSessionData, CreateBillingPortalSessionErrors, CreateBillingPortalSessionResponses, CreateCheckoutSessionData, CreateCheckoutSessionErrors, CreateCheckoutSessionResponses, CreateNamedPlatformTokenData, CreateNamedPlatformTokenResponses, CreatePlatformTokenData, CreatePlatformTokenErrors, CreatePlatformTokenResponses, CreateWorkosSessionData, CreateWorkosSessionErrors, CreateWorkosSessionResponses, CreateWorldData, CreateWorldErrors, CreateWorldResponses, CreateWorldTokenData, CreateWorldTokenResponses, DeleteEmbeddingProviderCredentialData, DeleteEmbeddingProviderCredentialErrors, DeleteEmbeddingProviderCredentialResponses, DeletePlatformTokenData, DeletePlatformTokenResponses, DeleteUserMeData, DeleteUserMeErrors, DeleteUserMeResponses, DeleteWorldData, DeleteWorldErrors, DeleteWorldResponses, DeleteWorldTokenData, DeleteWorldTokenResponses, ExportUserMeData, ExportUserMeErrors, ExportUserMeResponses, GetEmbeddingProviderCredentialData, GetEmbeddingProviderCredentialErrors, GetEmbeddingProviderCredentialResponses, GetHealthData, GetHealthResponses, GetReadinessData, GetReadinessErrors, GetReadinessResponses, GetUserMeData, GetUserMeErrors, GetUserMeResponses, GetUserPlanData, GetUserPlanErrors, GetUserPlanResponses, GetWorldBillingData, GetWorldBillingResponses, GetWorldData, GetWorldErrors, GetWorldLimitsData, GetWorldLimitsResponses, GetWorldResponses, GetWorldUsageData, GetWorldUsageResponses, InitiateAccountDeletionData, InitiateAccountDeletionErrors, InitiateAccountDeletionResponses, ListAdminAuditEventsData, ListAdminAuditEventsErrors, ListAdminAuditEventsResponses, ListEmbeddingProvidersData, ListEmbeddingProvidersErrors, ListEmbeddingProvidersResponses, ListPlatformTokensData, ListPlatformTokensResponses, ListWorldInvoicesData, ListWorldInvoicesResponses, ListWorldsData, ListWorldsResponses, ListWorldTokensData, ListWorldTokensResponses, LoginData, LoginResponses, OpenWorldBillingPortalData, OpenWorldBillingPortalErrors, RecordWorldUsageData, RecordWorldUsageErrors, RecordWorldUsageResponses, SetEmbeddingProviderCredentialData, SetEmbeddingProviderCredentialErrors, SetEmbeddingProviderCredentialResponses, SetUserPlanData, SetUserPlanErrors, SetUserPlanResponses, UndeleteWorldData, UndeleteWorldErrors, UndeleteWorldResponses, UpdateWorldData, UpdateWorldErrors, UpdateWorldResponses, ValidatePlatformTokenData, ValidatePlatformTokenResponses, VerifyLoginData, VerifyLoginErrors, VerifyLoginResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -33,9 +33,9 @@ export const getReadiness = <ThrowOnError extends boolean = false>(options?: Opt
 /**
  * Start magic-link login
  *
- * Sends a one-time code to an allowlisted email. Unauthenticated; limited to 5 requests per minute per IP. Missing, rate-limited, and unconfigured cases return 200 `{ ok: true }` so the endpoint does not reveal which emails exist.
+ * Sends a one-time code to an allowlisted email. Unauthenticated; limited to 5 requests per minute per IP. Every outcome (missing email, rate-limited, not allowlisted, unconfigured) returns 200 `{ ok: true }` so the endpoint does not reveal which emails are on the beta list; no code is sent to an email that is not allowlisted.
  */
-export const login = <ThrowOnError extends boolean = false>(options?: Options<LoginData, ThrowOnError>): RequestResult<LoginResponses, LoginErrors, ThrowOnError> => (options?.client ?? client).post<LoginResponses, LoginErrors, ThrowOnError>({
+export const login = <ThrowOnError extends boolean = false>(options?: Options<LoginData, ThrowOnError>): RequestResult<LoginResponses, unknown, ThrowOnError> => (options?.client ?? client).post<LoginResponses, unknown, ThrowOnError>({
     url: '/v1/auth/login',
     ...options,
     headers: {
@@ -111,6 +111,54 @@ export const exportUserMe = <ThrowOnError extends boolean = false>(options?: Opt
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/users/me/export',
     ...options
+});
+
+/**
+ * List embedding provider credentials
+ *
+ * Lists the caller's bring-your-own-key embedding credentials, revoked ones included so their status stays readable. Metadata only: a key is never returned.
+ */
+export const listEmbeddingProviders = <ThrowOnError extends boolean = false>(options?: Options<ListEmbeddingProvidersData, ThrowOnError>): RequestResult<ListEmbeddingProvidersResponses, ListEmbeddingProvidersErrors, ThrowOnError> => (options?.client ?? client).get<ListEmbeddingProvidersResponses, ListEmbeddingProvidersErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me/embedding-providers',
+    ...options
+});
+
+/**
+ * Revoke an embedding provider credential
+ *
+ * Revokes the caller's credential for one provider. The stored key is erased and every world on that provider's models falls back to keyword search until a new key is stored and the world is reindexed. Worlds on another provider's models are not affected.
+ */
+export const deleteEmbeddingProviderCredential = <ThrowOnError extends boolean = false>(options: Options<DeleteEmbeddingProviderCredentialData, ThrowOnError>): RequestResult<DeleteEmbeddingProviderCredentialResponses, DeleteEmbeddingProviderCredentialErrors, ThrowOnError> => (options.client ?? client).delete<DeleteEmbeddingProviderCredentialResponses, DeleteEmbeddingProviderCredentialErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me/embedding-providers/{provider}',
+    ...options
+});
+
+/**
+ * Get an embedding provider credential's status
+ *
+ * Returns the metadata of the caller's credential for one provider. The key itself is never returned.
+ */
+export const getEmbeddingProviderCredential = <ThrowOnError extends boolean = false>(options: Options<GetEmbeddingProviderCredentialData, ThrowOnError>): RequestResult<GetEmbeddingProviderCredentialResponses, GetEmbeddingProviderCredentialErrors, ThrowOnError> => (options.client ?? client).get<GetEmbeddingProviderCredentialResponses, GetEmbeddingProviderCredentialErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me/embedding-providers/{provider}',
+    ...options
+});
+
+/**
+ * Set an embedding provider credential
+ *
+ * Stores or rotates the caller's API key for one embedding provider. The key is encrypted at rest, write-only, and never returned or logged. Choose a model, reindex, and search with a world token on the data plane afterwards. Returns 503 EMBEDDINGS_NOT_CONFIGURED when the deployment has embeddings disabled.
+ */
+export const setEmbeddingProviderCredential = <ThrowOnError extends boolean = false>(options: Options<SetEmbeddingProviderCredentialData, ThrowOnError>): RequestResult<SetEmbeddingProviderCredentialResponses, SetEmbeddingProviderCredentialErrors, ThrowOnError> => (options.client ?? client).put<SetEmbeddingProviderCredentialResponses, SetEmbeddingProviderCredentialErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me/embedding-providers/{provider}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**
@@ -332,5 +380,51 @@ export const openWorldBillingPortal = <ThrowOnError extends boolean = false>(opt
 export const listAdminAuditEvents = <ThrowOnError extends boolean = false>(options?: Options<ListAdminAuditEventsData, ThrowOnError>): RequestResult<ListAdminAuditEventsResponses, ListAdminAuditEventsErrors, ThrowOnError> => (options?.client ?? client).get<ListAdminAuditEventsResponses, ListAdminAuditEventsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/v1/admin/audit-events',
+    ...options
+});
+
+/**
+ * Get the authenticated user's plan and today's write usage
+ */
+export const getUserPlan = <ThrowOnError extends boolean = false>(options?: Options<GetUserPlanData, ThrowOnError>): RequestResult<GetUserPlanResponses, GetUserPlanErrors, ThrowOnError> => (options?.client ?? client).get<GetUserPlanResponses, GetUserPlanErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me/plan',
+    ...options
+});
+
+/**
+ * Set a user's plan
+ *
+ * Admin-only. Stores the plan and applies its daily write budget in the data plane. Idempotent: if the data plane cannot be reached the plan is still saved, the call returns 502 BUDGET_SYNC_FAILED, and repeating it retries the sync.
+ */
+export const setUserPlan = <ThrowOnError extends boolean = false>(options: Options<SetUserPlanData, ThrowOnError>): RequestResult<SetUserPlanResponses, SetUserPlanErrors, ThrowOnError> => (options.client ?? client).put<SetUserPlanResponses, SetUserPlanErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/admin/users/{userUid}/plan',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Start a Pro subscription checkout
+ *
+ * Creates a Stripe Checkout session for the Pro plan and returns the hosted page's URL. The plan changes when Stripe confirms the payment (a webhook), not when this call returns, so the console shows the new plan shortly after the user comes back.
+ */
+export const createCheckoutSession = <ThrowOnError extends boolean = false>(options?: Options<CreateCheckoutSessionData, ThrowOnError>): RequestResult<CreateCheckoutSessionResponses, CreateCheckoutSessionErrors, ThrowOnError> => (options?.client ?? client).post<CreateCheckoutSessionResponses, CreateCheckoutSessionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me/billing/checkout',
+    ...options
+});
+
+/**
+ * Open the Stripe billing portal
+ *
+ * Creates a Stripe billing portal session where the user can update their card, see invoices or cancel, and returns its URL.
+ */
+export const createBillingPortalSession = <ThrowOnError extends boolean = false>(options?: Options<CreateBillingPortalSessionData, ThrowOnError>): RequestResult<CreateBillingPortalSessionResponses, CreateBillingPortalSessionErrors, ThrowOnError> => (options?.client ?? client).post<CreateBillingPortalSessionResponses, CreateBillingPortalSessionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v1/users/me/billing/portal',
     ...options
 });

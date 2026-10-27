@@ -41,29 +41,6 @@
         ],
         "description": "Always `{ ok: true }` for accepted, rate-limited, unconfigured, or empty requests, so the endpoint is not an oracle for allowlist membership."
       },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string"
-              },
-              "message": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "code",
-              "message"
-            ]
-          }
-        },
-        "required": [
-          "error"
-        ]
-      },
       "LoginRequest": {
         "type": "object",
         "properties": {
@@ -86,6 +63,29 @@
         },
         "required": [
           "token"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          }
+        },
+        "required": [
+          "error"
         ]
       },
       "VerifyRequest": {
@@ -172,6 +172,62 @@
           "email",
           "displayName",
           "state",
+          "createTime"
+        ]
+      },
+      "EmbeddingProviderList": {
+        "type": "object",
+        "properties": {
+          "providers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmbeddingCredential"
+            }
+          }
+        },
+        "required": [
+          "providers"
+        ]
+      },
+      "EmbeddingCredential": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "openai",
+              "openrouter"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "invalid",
+              "revoked"
+            ]
+          },
+          "fingerprint": {
+            "type": "string"
+          },
+          "last4": {
+            "type": "string"
+          },
+          "createTime": {
+            "type": "string"
+          },
+          "rotateTime": {
+            "type": "string"
+          },
+          "revokeTime": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "status",
+          "fingerprint",
+          "last4",
           "createTime"
         ]
       },
@@ -581,6 +637,81 @@
           "subscriptionConfigured",
           "paymentRequired"
         ]
+      },
+      "UserPlan": {
+        "type": "object",
+        "properties": {
+          "plan": {
+            "type": "string",
+            "enum": [
+              "free",
+              "pro"
+            ],
+            "description": "The user's plan. It sets their daily database write budget."
+          },
+          "dailyRowWrites": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "description": "Database rows the user's worlds may write per UTC day, shared across all of them. A stored quad costs about 9 rows, and about 94 per asserted quad with inference on. Null if the data plane could not be reached."
+          },
+          "rowsWrittenToday": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "description": "Rows written so far today (UTC), or null if the data plane could not be reached."
+          },
+          "usagePercent": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0
+          },
+          "day": {
+            "type": "string",
+            "nullable": true,
+            "description": "The UTC day."
+          },
+          "billing": {
+            "type": "object",
+            "properties": {
+              "checkoutAvailable": {
+                "type": "boolean",
+                "description": "True when this user can start a Pro checkout: billing is configured and they are on the free plan."
+              },
+              "portalAvailable": {
+                "type": "boolean",
+                "description": "True when the user has a billing account to manage in the Stripe portal."
+              }
+            },
+            "required": [
+              "checkoutAvailable",
+              "portalAvailable"
+            ],
+            "description": "What the console may offer."
+          }
+        },
+        "required": [
+          "plan",
+          "dailyRowWrites",
+          "rowsWrittenToday",
+          "usagePercent",
+          "day",
+          "billing"
+        ]
+      },
+      "BillingSessionUrl": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "The Stripe-hosted page to send the user to. It is single-use and expires."
+          }
+        },
+        "required": [
+          "url"
+        ]
       }
     },
     "parameters": {}
@@ -692,7 +823,7 @@
         ],
         "operationId": "login",
         "summary": "Start magic-link login",
-        "description": "Sends a one-time code to an allowlisted email. Unauthenticated; limited to 5 requests per minute per IP. Missing, rate-limited, and unconfigured cases return 200 `{ ok: true }` so the endpoint does not reveal which emails exist.",
+        "description": "Sends a one-time code to an allowlisted email. Unauthenticated; limited to 5 requests per minute per IP. Every outcome (missing email, rate-limited, not allowlisted, unconfigured) returns 200 `{ ok: true }` so the endpoint does not reveal which emails are on the beta list; no code is sent to an email that is not allowlisted.",
         "x-mint": {
           "metadata": {
             "title": "Start magic-link login"
@@ -715,16 +846,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LoginResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Email is not on the private beta allowlist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1259,6 +1380,550 @@
           },
           "401": {
             "description": "Not authenticated as a user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/me/embedding-providers": {
+      "get": {
+        "tags": [
+          "Embeddings"
+        ],
+        "operationId": "listEmbeddingProviders",
+        "summary": "List embedding provider credentials",
+        "description": "Lists the caller's bring-your-own-key embedding credentials, revoked ones included so their status stays readable. Metadata only: a key is never returned.",
+        "x-mint": {
+          "metadata": {
+            "title": "List embedding provider credentials"
+          }
+        },
+        "security": [
+          {
+            "bearerPlatformToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credential metadata, one entry per provider",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmbeddingProviderList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated as a user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/me/embedding-providers/{provider}": {
+      "put": {
+        "tags": [
+          "Embeddings"
+        ],
+        "operationId": "setEmbeddingProviderCredential",
+        "summary": "Set an embedding provider credential",
+        "description": "Stores or rotates the caller's API key for one embedding provider. The key is encrypted at rest, write-only, and never returned or logged. Choose a model, reindex, and search with a world token on the data plane afterwards. Returns 503 EMBEDDINGS_NOT_CONFIGURED when the deployment has embeddings disabled.",
+        "x-mint": {
+          "metadata": {
+            "title": "Set an embedding provider credential"
+          }
+        },
+        "security": [
+          {
+            "bearerPlatformToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "openai",
+                "openrouter"
+              ],
+              "description": "Embedding provider this credential addresses. A user holds at most one credential per provider."
+            },
+            "required": true,
+            "description": "Embedding provider this credential addresses. A user holds at most one credential per provider.",
+            "name": "provider",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "type": "string",
+                    "description": "The provider API key: 16 to 512 printable characters with no whitespace."
+                  }
+                },
+                "required": [
+                  "apiKey"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Credential stored; metadata only",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmbeddingCredential"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated as a user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Embeddings are not configured on this deployment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Embeddings"
+        ],
+        "operationId": "getEmbeddingProviderCredential",
+        "summary": "Get an embedding provider credential's status",
+        "description": "Returns the metadata of the caller's credential for one provider. The key itself is never returned.",
+        "x-mint": {
+          "metadata": {
+            "title": "Get an embedding provider credential"
+          }
+        },
+        "security": [
+          {
+            "bearerPlatformToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "openai",
+                "openrouter"
+              ],
+              "description": "Embedding provider this credential addresses. A user holds at most one credential per provider."
+            },
+            "required": true,
+            "description": "Embedding provider this credential addresses. A user holds at most one credential per provider.",
+            "name": "provider",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Credential metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmbeddingCredential"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated as a user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Embeddings"
+        ],
+        "operationId": "deleteEmbeddingProviderCredential",
+        "summary": "Revoke an embedding provider credential",
+        "description": "Revokes the caller's credential for one provider. The stored key is erased and every world on that provider's models falls back to keyword search until a new key is stored and the world is reindexed. Worlds on another provider's models are not affected.",
+        "x-mint": {
+          "metadata": {
+            "title": "Revoke an embedding provider credential"
+          }
+        },
+        "security": [
+          {
+            "bearerPlatformToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "openai",
+                "openrouter"
+              ],
+              "description": "Embedding provider this credential addresses. A user holds at most one credential per provider."
+            },
+            "required": true,
+            "description": "Embedding provider this credential addresses. A user holds at most one credential per provider.",
+            "name": "provider",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Revoked"
+          },
+          "401": {
+            "description": "Not authenticated as a user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No credential",
             "content": {
               "application/json": {
                 "schema": {
@@ -3041,6 +3706,460 @@
           },
           "403": {
             "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/me/plan": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "operationId": "getUserPlan",
+        "summary": "Get the authenticated user's plan and today's write usage",
+        "x-mint": {
+          "metadata": {
+            "title": "Get plan and write usage"
+          }
+        },
+        "security": [
+          {
+            "bearerPlatformToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The plan and usage against its daily write budget",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPlan"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/users/{userUid}/plan": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "operationId": "setUserPlan",
+        "summary": "Set a user's plan",
+        "description": "Admin-only. Stores the plan and applies its daily write budget in the data plane. Idempotent: if the data plane cannot be reached the plan is still saved, the call returns 502 BUDGET_SYNC_FAILED, and repeating it retries the sync.",
+        "x-mint": {
+          "metadata": {
+            "title": "Set a user's plan"
+          }
+        },
+        "security": [
+          {
+            "bearerPlatformToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": true,
+            "name": "userUid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "plan": {
+                    "type": "string",
+                    "enum": [
+                      "free",
+                      "pro"
+                    ],
+                    "description": "The user's plan. It sets their daily database write budget."
+                  }
+                },
+                "required": [
+                  "plan"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The plan now in effect",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userUid": {
+                      "type": "string"
+                    },
+                    "plan": {
+                      "type": "string",
+                      "enum": [
+                        "free",
+                        "pro"
+                      ],
+                      "description": "The user's plan. It sets their daily database write budget."
+                    },
+                    "dailyRowWrites": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    }
+                  },
+                  "required": [
+                    "userUid",
+                    "plan",
+                    "dailyRowWrites"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The plan was saved but the data plane did not accept its budget (BUDGET_SYNC_FAILED). Repeat the call.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/me/billing/checkout": {
+      "post": {
+        "tags": [
+          "Billing"
+        ],
+        "operationId": "createCheckoutSession",
+        "summary": "Start a Pro subscription checkout",
+        "description": "Creates a Stripe Checkout session for the Pro plan and returns the hosted page's URL. The plan changes when Stripe confirms the payment (a webhook), not when this call returns, so the console shows the new plan shortly after the user comes back.",
+        "x-mint": {
+          "metadata": {
+            "title": "Start a Pro checkout"
+          }
+        },
+        "security": [
+          {
+            "bearerPlatformToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checkout session created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingSessionUrl"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The user already has a subscription (ALREADY_SUBSCRIBED).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Stripe refused the request (STRIPE_ERROR).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Billing is not configured (BILLING_NOT_CONFIGURED).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/me/billing/portal": {
+      "post": {
+        "tags": [
+          "Billing"
+        ],
+        "operationId": "createBillingPortalSession",
+        "summary": "Open the Stripe billing portal",
+        "description": "Creates a Stripe billing portal session where the user can update their card, see invoices or cancel, and returns its URL.",
+        "x-mint": {
+          "metadata": {
+            "title": "Open the billing portal"
+          }
+        },
+        "security": [
+          {
+            "bearerPlatformToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Portal session created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingSessionUrl"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The user has no billing account yet (NO_BILLING_ACCOUNT).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Stripe refused the request (STRIPE_ERROR).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Billing is not configured (BILLING_NOT_CONFIGURED).",
             "content": {
               "application/json": {
                 "schema": {
