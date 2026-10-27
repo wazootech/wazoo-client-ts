@@ -11,13 +11,6 @@ export type LoginResponse = {
     ok: true;
 };
 
-export type ErrorResponse = {
-    error: {
-        code: string;
-        message: string;
-    };
-};
-
 export type LoginRequest = {
     /**
      * Email address to send the magic-link code to. Matched case-insensitively.
@@ -30,6 +23,13 @@ export type VerifyResponse = {
      * Platform session token (wzp_).
      */
     token: string;
+};
+
+export type ErrorResponse = {
+    error: {
+        code: string;
+        message: string;
+    };
 };
 
 export type VerifyRequest = {
@@ -64,6 +64,20 @@ export type User = {
     displayName: string | null;
     state: 'ACTIVE';
     createTime: string;
+};
+
+export type EmbeddingProviderList = {
+    providers: Array<EmbeddingCredential>;
+};
+
+export type EmbeddingCredential = {
+    provider: 'openai' | 'openrouter';
+    status: 'active' | 'invalid' | 'revoked';
+    fingerprint: string;
+    last4: string;
+    createTime: string;
+    rotateTime?: string;
+    revokeTime?: string;
 };
 
 export type World = {
@@ -184,6 +198,46 @@ export type Billing = {
     paymentRequired: boolean;
 };
 
+export type UserPlan = {
+    /**
+     * The user's plan. It sets their daily database write budget.
+     */
+    plan: 'free' | 'pro';
+    /**
+     * Database rows the user's worlds may write per UTC day, shared across all of them. A stored quad costs about 9 rows, and about 94 per asserted quad with inference on. Null if the data plane could not be reached.
+     */
+    dailyRowWrites: number | null;
+    /**
+     * Rows written so far today (UTC), or null if the data plane could not be reached.
+     */
+    rowsWrittenToday: number | null;
+    usagePercent: number | null;
+    /**
+     * The UTC day.
+     */
+    day: string | null;
+    /**
+     * What the console may offer.
+     */
+    billing: {
+        /**
+         * True when this user can start a Pro checkout: billing is configured and they are on the free plan.
+         */
+        checkoutAvailable: boolean;
+        /**
+         * True when the user has a billing account to manage in the Stripe portal.
+         */
+        portalAvailable: boolean;
+    };
+};
+
+export type BillingSessionUrl = {
+    /**
+     * The Stripe-hosted page to send the user to. It is single-use and expires.
+     */
+    url: string;
+};
+
 export type GetHealthData = {
     body?: never;
     path?: never;
@@ -238,15 +292,6 @@ export type LoginData = {
     query?: never;
     url: '/v1/auth/login';
 };
-
-export type LoginErrors = {
-    /**
-     * Email is not on the private beta allowlist
-     */
-    403: ErrorResponse;
-};
-
-export type LoginError = LoginErrors[keyof LoginErrors];
 
 export type LoginResponses = {
     /**
@@ -487,6 +532,218 @@ export type ExportUserMeResponses = {
 };
 
 export type ExportUserMeResponse = ExportUserMeResponses[keyof ExportUserMeResponses];
+
+export type ListEmbeddingProvidersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/users/me/embedding-providers';
+};
+
+export type ListEmbeddingProvidersErrors = {
+    /**
+     * Not authenticated as a user
+     */
+    401: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Missing scope
+     */
+    403: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type ListEmbeddingProvidersError = ListEmbeddingProvidersErrors[keyof ListEmbeddingProvidersErrors];
+
+export type ListEmbeddingProvidersResponses = {
+    /**
+     * Credential metadata, one entry per provider
+     */
+    200: EmbeddingProviderList;
+};
+
+export type ListEmbeddingProvidersResponse = ListEmbeddingProvidersResponses[keyof ListEmbeddingProvidersResponses];
+
+export type DeleteEmbeddingProviderCredentialData = {
+    body?: never;
+    path: {
+        /**
+         * Embedding provider this credential addresses. A user holds at most one credential per provider.
+         */
+        provider: 'openai' | 'openrouter';
+    };
+    query?: never;
+    url: '/v1/users/me/embedding-providers/{provider}';
+};
+
+export type DeleteEmbeddingProviderCredentialErrors = {
+    /**
+     * Not authenticated as a user
+     */
+    401: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Missing scope
+     */
+    403: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * No credential
+     */
+    404: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type DeleteEmbeddingProviderCredentialError = DeleteEmbeddingProviderCredentialErrors[keyof DeleteEmbeddingProviderCredentialErrors];
+
+export type DeleteEmbeddingProviderCredentialResponses = {
+    /**
+     * Revoked
+     */
+    204: void;
+};
+
+export type DeleteEmbeddingProviderCredentialResponse = DeleteEmbeddingProviderCredentialResponses[keyof DeleteEmbeddingProviderCredentialResponses];
+
+export type GetEmbeddingProviderCredentialData = {
+    body?: never;
+    path: {
+        /**
+         * Embedding provider this credential addresses. A user holds at most one credential per provider.
+         */
+        provider: 'openai' | 'openrouter';
+    };
+    query?: never;
+    url: '/v1/users/me/embedding-providers/{provider}';
+};
+
+export type GetEmbeddingProviderCredentialErrors = {
+    /**
+     * Not authenticated as a user
+     */
+    401: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Missing scope
+     */
+    403: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * No credential
+     */
+    404: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type GetEmbeddingProviderCredentialError = GetEmbeddingProviderCredentialErrors[keyof GetEmbeddingProviderCredentialErrors];
+
+export type GetEmbeddingProviderCredentialResponses = {
+    /**
+     * Credential metadata
+     */
+    200: EmbeddingCredential;
+};
+
+export type GetEmbeddingProviderCredentialResponse = GetEmbeddingProviderCredentialResponses[keyof GetEmbeddingProviderCredentialResponses];
+
+export type SetEmbeddingProviderCredentialData = {
+    body: {
+        /**
+         * The provider API key: 16 to 512 printable characters with no whitespace.
+         */
+        apiKey: string;
+    };
+    path: {
+        /**
+         * Embedding provider this credential addresses. A user holds at most one credential per provider.
+         */
+        provider: 'openai' | 'openrouter';
+    };
+    query?: never;
+    url: '/v1/users/me/embedding-providers/{provider}';
+};
+
+export type SetEmbeddingProviderCredentialErrors = {
+    /**
+     * Bad request
+     */
+    400: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Not authenticated as a user
+     */
+    401: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Missing scope
+     */
+    403: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Embeddings are not configured on this deployment
+     */
+    503: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type SetEmbeddingProviderCredentialError = SetEmbeddingProviderCredentialErrors[keyof SetEmbeddingProviderCredentialErrors];
+
+export type SetEmbeddingProviderCredentialResponses = {
+    /**
+     * Credential stored; metadata only
+     */
+    200: EmbeddingCredential;
+};
+
+export type SetEmbeddingProviderCredentialResponse = SetEmbeddingProviderCredentialResponses[keyof SetEmbeddingProviderCredentialResponses];
 
 export type ListWorldsData = {
     body?: never;
@@ -1201,3 +1458,182 @@ export type ListAdminAuditEventsResponses = {
 };
 
 export type ListAdminAuditEventsResponse = ListAdminAuditEventsResponses[keyof ListAdminAuditEventsResponses];
+
+export type GetUserPlanData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/users/me/plan';
+};
+
+export type GetUserPlanErrors = {
+    /**
+     * User not found
+     */
+    404: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type GetUserPlanError = GetUserPlanErrors[keyof GetUserPlanErrors];
+
+export type GetUserPlanResponses = {
+    /**
+     * The plan and usage against its daily write budget
+     */
+    200: UserPlan;
+};
+
+export type GetUserPlanResponse = GetUserPlanResponses[keyof GetUserPlanResponses];
+
+export type SetUserPlanData = {
+    body: {
+        /**
+         * The user's plan. It sets their daily database write budget.
+         */
+        plan: 'free' | 'pro';
+    };
+    path: {
+        userUid: string;
+    };
+    query?: never;
+    url: '/v1/admin/users/{userUid}/plan';
+};
+
+export type SetUserPlanErrors = {
+    /**
+     * User not found
+     */
+    404: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * The plan was saved but the data plane did not accept its budget (BUDGET_SYNC_FAILED). Repeat the call.
+     */
+    502: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type SetUserPlanError = SetUserPlanErrors[keyof SetUserPlanErrors];
+
+export type SetUserPlanResponses = {
+    /**
+     * The plan now in effect
+     */
+    200: {
+        userUid: string;
+        /**
+         * The user's plan. It sets their daily database write budget.
+         */
+        plan: 'free' | 'pro';
+        dailyRowWrites: number;
+    };
+};
+
+export type SetUserPlanResponse = SetUserPlanResponses[keyof SetUserPlanResponses];
+
+export type CreateCheckoutSessionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/users/me/billing/checkout';
+};
+
+export type CreateCheckoutSessionErrors = {
+    /**
+     * The user already has a subscription (ALREADY_SUBSCRIBED).
+     */
+    409: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Stripe refused the request (STRIPE_ERROR).
+     */
+    502: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Billing is not configured (BILLING_NOT_CONFIGURED).
+     */
+    503: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type CreateCheckoutSessionError = CreateCheckoutSessionErrors[keyof CreateCheckoutSessionErrors];
+
+export type CreateCheckoutSessionResponses = {
+    /**
+     * Checkout session created
+     */
+    200: BillingSessionUrl;
+};
+
+export type CreateCheckoutSessionResponse = CreateCheckoutSessionResponses[keyof CreateCheckoutSessionResponses];
+
+export type CreateBillingPortalSessionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/users/me/billing/portal';
+};
+
+export type CreateBillingPortalSessionErrors = {
+    /**
+     * The user has no billing account yet (NO_BILLING_ACCOUNT).
+     */
+    409: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Stripe refused the request (STRIPE_ERROR).
+     */
+    502: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+    /**
+     * Billing is not configured (BILLING_NOT_CONFIGURED).
+     */
+    503: {
+        error: {
+            code: string;
+            message: string;
+        };
+    };
+};
+
+export type CreateBillingPortalSessionError = CreateBillingPortalSessionErrors[keyof CreateBillingPortalSessionErrors];
+
+export type CreateBillingPortalSessionResponses = {
+    /**
+     * Portal session created
+     */
+    200: BillingSessionUrl;
+};
+
+export type CreateBillingPortalSessionResponse = CreateBillingPortalSessionResponses[keyof CreateBillingPortalSessionResponses];
