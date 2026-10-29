@@ -35,6 +35,7 @@ this repo's specifics:
 - Actions are pinned to commit SHAs, and CI pins Deno to `v2.9.8`.
 - `secret-scan.yml` (gitleaks) runs on every PR; `code-health.yml` enforces file
   length (120 lines of code, 300 for tests; `src/generated/` and the OpenAPI
-  snapshot exempt; no allowlisted exceptions) and warns on unlinked TODOs; `CODEOWNERS` assigns review.
+  snapshot exempt; no allowlisted exceptions) and warns on unlinked TODOs;
+  `CODEOWNERS` assigns review.
 - A client change is not available downstream until it is published, and
   publishing needs approval.
