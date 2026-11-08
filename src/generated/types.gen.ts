@@ -123,6 +123,19 @@ export type WorldToken = {
     createTime?: string;
 };
 
+export type WorldTokenCreated = {
+    uid: string;
+    name: string;
+    namespace?: string;
+    worldId?: string;
+    scopes?: Array<string>;
+    createTime?: string;
+    /**
+     * One-time wzw_ secret returned only when the token is created; it cannot be retrieved again.
+     */
+    token: string;
+};
+
 export type WorldTokenCreateRequest = {
     name?: string;
 };
@@ -1040,7 +1053,7 @@ export type CreateWorldTokenResponses = {
      * Created World token
      */
     201: {
-        token: WorldToken;
+        token: WorldTokenCreated;
     };
 };
 
