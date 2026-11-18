@@ -96,13 +96,14 @@ export type World = {
     expireTime?: string;
 };
 
+/**
+ * Flat create body, e.g. {"displayName":"hello"}. The control plane and the worlds-api data plane use the same shape; unknown keys are rejected.
+ */
 export type CreateWorldRequest = {
     ownerEmail?: string;
     email?: string;
-    world: {
-        displayName: string;
-        region?: string;
-    };
+    displayName: string;
+    region?: string;
 };
 
 export type UpdateWorldRequest = {
