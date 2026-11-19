@@ -265,6 +265,7 @@ export type GetHealthResponses = {
      */
     200: {
         status: string;
+        gitSha: string | null;
     };
 };
 
