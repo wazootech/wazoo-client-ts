@@ -3,6 +3,7 @@ import {
   createWorkosSession,
   login,
   type LoginRequest,
+  mintWorkosSession,
   verifyLogin,
   type VerifyRequest,
   type WorkosSessionRequest,
@@ -59,6 +60,18 @@ Deno.test("verifyLogin posts to /v1/auth/verify and types the token", async () =
   assertEquals(captured[0].body, body);
 });
 
+Deno.test("mintWorkosSession posts to /v1/auth/workos", async () => {
+  const { captured } = stubClient(
+    { token: "wzp_x", expiresAt: "2026-11-11T00:00:00Z" },
+    201,
+  );
+  const body: WorkosSessionRequest = { email: "a@example.com" };
+  const result = await mintWorkosSession({ body });
+  assertEquals(result.data?.expiresAt, "2026-11-11T00:00:00Z");
+  assertEquals(captured[0].url, "https://api.example.test/v1/auth/workos");
+});
+
+// Deprecated path: the API answers it with a 308 to /v1/auth/workos.
 Deno.test("createWorkosSession posts to /v1/auth/workos-session", async () => {
   const { captured } = stubClient(
     { token: "wzp_x", expiresAt: "2026-11-11T00:00:00Z" },

@@ -354,6 +354,39 @@ export type VerifyLoginResponses = {
 
 export type VerifyLoginResponse = VerifyLoginResponses[keyof VerifyLoginResponses];
 
+export type MintWorkosSessionData = {
+    body?: WorkosSessionRequest;
+    path?: never;
+    query?: never;
+    url: '/v1/auth/workos';
+};
+
+export type MintWorkosSessionErrors = {
+    /**
+     * INVALID_ARGUMENT or AGE_GATE_REQUIRED
+     */
+    400: ErrorResponse;
+    /**
+     * Missing or invalid platform token
+     */
+    401: ErrorResponse;
+    /**
+     * Admin scope required
+     */
+    403: ErrorResponse;
+};
+
+export type MintWorkosSessionError = MintWorkosSessionErrors[keyof MintWorkosSessionErrors];
+
+export type MintWorkosSessionResponses = {
+    /**
+     * Console session token
+     */
+    201: WorkosSessionResponse;
+};
+
+export type MintWorkosSessionResponse = MintWorkosSessionResponses[keyof MintWorkosSessionResponses];
+
 export type CreateWorkosSessionData = {
     body?: WorkosSessionRequest;
     path?: never;
