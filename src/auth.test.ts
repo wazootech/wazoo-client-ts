@@ -1,3 +1,5 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import {
   client,
   createWorkosSession,
@@ -14,7 +16,7 @@ type Captured = { url: string; method: string; body: unknown };
 function stubClient(responseBody: unknown, status = 200) {
   const captured: Captured[] = [];
   // Configure the shared client; passing `client` per call is forwarded to
-  // Deno's Request init and rejected.
+  // the Request init and rejected.
   client.setConfig({
     baseUrl: "https://api.example.test",
     fetch: async (input: Request | string | URL, init?: RequestInit) => {
@@ -30,23 +32,17 @@ function stubClient(responseBody: unknown, status = 200) {
   return { captured };
 }
 
-function assertEquals(actual: unknown, expected: unknown) {
-  const a = JSON.stringify(actual);
-  const e = JSON.stringify(expected);
-  if (a !== e) throw new Error(`expected ${e}, got ${a}`);
-}
-
-Deno.test("login posts to /v1/auth/login", async () => {
+test("login posts to /v1/auth/login", async () => {
   const { captured } = stubClient({ ok: true });
   const body: LoginRequest = { email: "a@example.com" };
   const result = await login({ body });
-  assertEquals(result.data, { ok: true });
-  assertEquals(captured[0].method, "POST");
-  assertEquals(captured[0].url, "https://api.example.test/v1/auth/login");
-  assertEquals(captured[0].body, body);
+  assert.deepStrictEqual(result.data, { ok: true });
+  assert.equal(captured[0].method, "POST");
+  assert.equal(captured[0].url, "https://api.example.test/v1/auth/login");
+  assert.deepStrictEqual(captured[0].body, body);
 });
 
-Deno.test("verifyLogin posts to /v1/auth/verify and types the token", async () => {
+test("verifyLogin posts to /v1/auth/verify and types the token", async () => {
   const { captured } = stubClient({ token: "wzp_test" });
   const body: VerifyRequest = {
     email: "a@example.com",
@@ -55,32 +51,32 @@ Deno.test("verifyLogin posts to /v1/auth/verify and types the token", async () =
   };
   const result = await verifyLogin({ body });
   const token: string | undefined = result.data?.token;
-  assertEquals(token, "wzp_test");
-  assertEquals(captured[0].url, "https://api.example.test/v1/auth/verify");
-  assertEquals(captured[0].body, body);
+  assert.equal(token, "wzp_test");
+  assert.equal(captured[0].url, "https://api.example.test/v1/auth/verify");
+  assert.deepStrictEqual(captured[0].body, body);
 });
 
-Deno.test("mintWorkosSession posts to /v1/auth/workos", async () => {
+test("mintWorkosSession posts to /v1/auth/workos", async () => {
   const { captured } = stubClient(
     { token: "wzp_x", expiresAt: "2026-11-11T00:00:00Z" },
     201,
   );
   const body: WorkosSessionRequest = { email: "a@example.com" };
   const result = await mintWorkosSession({ body });
-  assertEquals(result.data?.expiresAt, "2026-11-11T00:00:00Z");
-  assertEquals(captured[0].url, "https://api.example.test/v1/auth/workos");
+  assert.equal(result.data?.expiresAt, "2026-11-11T00:00:00Z");
+  assert.equal(captured[0].url, "https://api.example.test/v1/auth/workos");
 });
 
 // Deprecated path: the API answers it with a 308 to /v1/auth/workos.
-Deno.test("createWorkosSession posts to /v1/auth/workos-session", async () => {
+test("createWorkosSession posts to /v1/auth/workos-session", async () => {
   const { captured } = stubClient(
     { token: "wzp_x", expiresAt: "2026-11-11T00:00:00Z" },
     201,
   );
   const body: WorkosSessionRequest = { email: "a@example.com" };
   const result = await createWorkosSession({ body });
-  assertEquals(result.data?.expiresAt, "2026-11-11T00:00:00Z");
-  assertEquals(
+  assert.equal(result.data?.expiresAt, "2026-11-11T00:00:00Z");
+  assert.equal(
     captured[0].url,
     "https://api.example.test/v1/auth/workos-session",
   );
