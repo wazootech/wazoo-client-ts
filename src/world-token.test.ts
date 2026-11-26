@@ -11,9 +11,7 @@ type Created = CreateWorldTokenResponses[201]["token"];
 type Listed = ListWorldTokensResponses[200]["tokens"][number];
 type Assert<T extends true> = T;
 type CreatedHasSecret = Assert<Created["token"] extends string ? true : false>;
-type ListedHasNoSecret = Assert<
-  "token" extends keyof Listed ? false : true
->;
+type ListedHasNoSecret = Assert<"token" extends keyof Listed ? false : true>;
 type ListedIsWorldToken = Assert<Listed extends WorldToken ? true : false>;
 
 test("create-world-token response exposes the one-time secret type", () => {

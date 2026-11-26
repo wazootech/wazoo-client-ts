@@ -6,17 +6,20 @@ on:
     branches: [main]
 
 jobs:
+  # Format, lint, type check, manifest check, tests and the OpenAPI snapshot
+  # check all run through `bun run ci`. Bun floats on 1.x on purpose so a Bun
+  # regression surfaces early. The publish dry run goes through the jsr CLI (a
+  # devDependency that bundles its own publisher), so no Deno is installed.
   ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          deno-version: v2.9.8
-          cache: true
+          bun-version: "1.x"
       - name: Install dependencies
-        run: deno ci
+        run: bun install --frozen-lockfile --ignore-scripts
       - name: Run CI checks
-        run: deno task ci
+        run: bun run ci
       - name: Publish dry run
-        run: deno task publish:dry
+        run: bun run publish:dry
