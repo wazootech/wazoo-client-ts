@@ -1,0 +1,23 @@
+{
+  "name": "@wazoo/client",
+  "version": "0.7.1",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts",
+    "./openapi.json": "./openapi/openapi.json"
+  },
+  "compilerOptions": {
+    "strict": true
+  },
+  "publish": {
+    "include": [
+      "src/**/*.ts",
+      "openapi/openapi.json",
+      "README.md",
+      "LICENSE"
+    ],
+    "exclude": [
+      "src/**/*.test.ts"
+    ]
+  }
+}

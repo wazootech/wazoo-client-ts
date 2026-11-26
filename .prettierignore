@@ -1,0 +1,5 @@
+# Not formatted by bun fmt: generated client, the OpenAPI snapshot (written by
+# scripts/sync-openapi.ts), and the lockfile.
+src/generated/
+openapi/openapi.json
+bun.lock
