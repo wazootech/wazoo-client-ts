@@ -7,9 +7,10 @@ This repository contains the TypeScript Wazoo client package.
 ## How to work here
 
 - Treat OpenAPI synchronization and generated output as deliberate operations.
-- Use `deno task ci` for normal validation (fmt, lint, type check).
-- Run `deno task generate` to regenerate the client from `openapi/openapi.json`.
-- Run `deno task sync:openapi` to refresh `openapi/openapi.json` from the API
+- Use `bun run ci` for normal validation (fmt, lint, type check,
+  tests, manifest and OpenAPI snapshot checks).
+- Run `bun run generate` to regenerate the client from `openapi/openapi.json`.
+- Run `bun run sync:openapi` to refresh `openapi/openapi.json` from the API
   spec.
 - Keep package exports, generated clients, and README examples aligned.
 
@@ -26,13 +27,13 @@ Family-wide rules live in the
 [wazootech workspace constitution](https://github.com/wazootech/workspace/blob/main/AGENTS.md#code-health-standards);
 this repo's specifics:
 
-- Before pushing, run `deno task ci` (fmt, lint, check, test, OpenAPI snapshot).
+- Before pushing, run `bun run ci` (fmt, lint, check, test, OpenAPI snapshot).
 - Never hand-edit `src/generated/` or `openapi/openapi.json`; regenerate them.
-  `deno task openapi:check` fails CI when the snapshot is stale against
+  `bun run openapi:check` fails CI when the snapshot is stale against
   `wazoo-api` `main`.
-- `deno lint` keeps `no-explicit-any` on; generated code is excluded from fmt,
+- Oxlint (`bun run lint`) keeps `typescript/no-explicit-any` on; generated code is excluded from fmt,
   lint, and the code-health report.
-- Actions are pinned to commit SHAs, and CI pins Deno to `v2.9.8`.
+- Actions are pinned to commit SHAs, and CI uses Bun on `1.x` (the one allowed unpinned toolchain).
 - `secret-scan.yml` (gitleaks) runs on every PR; `code-health.yml` enforces file
   length (120 lines of code, 300 for tests; `src/generated/` and the OpenAPI
   snapshot exempt; no allowlisted exceptions) and warns on unlinked TODOs;

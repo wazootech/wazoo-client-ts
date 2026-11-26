@@ -46,18 +46,19 @@ console.log(response.data?.worlds);
 
 ## Development
 
-Requires Deno (version pinned in `.tool-versions`).
+Requires Bun 1.4.5 or newer (`bun fmt` and `bun check` need it).
 
 ```sh
-deno task ci
+bun install --frozen-lockfile
+bun run ci
 ```
 
-Run `deno task sync:openapi` to refresh `openapi/openapi.json`. By default it
+Run `bun run sync:openapi` to refresh `openapi/openapi.json`. By default it
 reads the checked-in snapshot at `../wazoo-api/openapi/openapi.json` (a sibling
 checkout of the Wazoo API repo). In CI (no sibling checkout) it falls back to
 the committed snapshot on wazoo-api `main` via raw.githubusercontent.com. Set
 `WAZOO_API_OPENAPI_URL=https://api.wazoo.dev/openapi.json` to sync from a
-deployed API. CI runs `deno task openapi:check` so spec drift fails the build.
+deployed API. CI runs `bun run openapi:check` so spec drift fails the build.
 
-Run `deno task generate` to regenerate `src/generated/` from the synced spec via
+Run `bun run generate` to regenerate `src/generated/` from the synced spec via
 `@hey-api/openapi-ts`.
