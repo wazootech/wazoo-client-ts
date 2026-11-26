@@ -10,14 +10,7 @@
     "strict": true
   },
   "publish": {
-    "include": [
-      "src/**/*.ts",
-      "openapi/openapi.json",
-      "README.md",
-      "LICENSE"
-    ],
-    "exclude": [
-      "src/**/*.test.ts"
-    ]
+    "include": ["src/**/*.ts", "openapi/openapi.json", "README.md", "LICENSE"],
+    "exclude": ["src/**/*.test.ts"]
   }
 }
