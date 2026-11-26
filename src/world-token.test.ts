@@ -1,3 +1,5 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import type {
   CreateWorldTokenResponses,
   ListWorldTokensResponses,
@@ -14,12 +16,12 @@ type ListedHasNoSecret = Assert<
 >;
 type ListedIsWorldToken = Assert<Listed extends WorldToken ? true : false>;
 
-Deno.test("create-world-token response exposes the one-time secret type", () => {
+test("create-world-token response exposes the one-time secret type", () => {
   const created: Created = { uid: "u", name: "n", token: "wzw_example" };
   const _checks: [CreatedHasSecret, ListedHasNoSecret, ListedIsWorldToken] = [
     true,
     true,
     true,
   ];
-  if (created.token !== "wzw_example") throw new Error("unexpected");
+  assert.equal(created.token, "wzw_example");
 });
